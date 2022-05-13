@@ -1,4 +1,4 @@
-package redstonedubstep.mods.serverdatamanager;
+package redstonedubstep.mods.serverdataaccessor;
 
 import net.minecraft.commands.Commands.CommandSelection;
 import net.minecraftforge.common.MinecraftForge;
@@ -8,11 +8,11 @@ import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.network.NetworkConstants;
-import redstonedubstep.mods.serverdatamanager.commands.CommandRoot;
+import redstonedubstep.mods.serverdataaccessor.commands.CommandRoot;
 
-@Mod("serverdatamanager")
-public class ServerDataManager {
-	public ServerDataManager() {
+@Mod("serverdataaccessor")
+public class ServerDataAccessor {
+	public ServerDataAccessor() {
 		ModLoadingContext.get().registerExtensionPoint(IExtensionPoint.DisplayTest.class, () -> new IExtensionPoint.DisplayTest(() -> NetworkConstants.IGNORESERVERONLY, (a, b) -> true));
 		MinecraftForge.EVENT_BUS.addListener(this::registerCommands);
 		ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, SDMConfig.SERVER_SPEC);

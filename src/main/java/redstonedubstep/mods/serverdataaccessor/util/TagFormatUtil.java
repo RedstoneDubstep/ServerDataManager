@@ -1,4 +1,4 @@
-package redstonedubstep.mods.serverdatamanager.util;
+package redstonedubstep.mods.serverdataaccessor.util;
 
 import java.util.ArrayList;
 import java.util.HashSet;

@@ -1,4 +1,4 @@
-package redstonedubstep.mods.serverdatamanager.commands.world;
+package redstonedubstep.mods.serverdataaccessor.commands.world;
 
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -23,8 +23,8 @@ import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.storage.DimensionDataStorage;
-import redstonedubstep.mods.serverdatamanager.util.FormatUtil;
-import redstonedubstep.mods.serverdatamanager.util.TagFormatUtil;
+import redstonedubstep.mods.serverdataaccessor.util.FormatUtil;
+import redstonedubstep.mods.serverdataaccessor.util.TagFormatUtil;
 
 public class DimensionDataCommand {
 	private static final SuggestionProvider<CommandSourceStack> SUGGEST_LEVEL_DATA_FILES = (ctx, suggestionsBuilder) -> SharedSuggestionProvider.suggest(FormatUtil.safeArrayStream(DimensionArgument.getDimension(ctx, "dimension").getDataStorage().dataFolder.listFiles()).map(f -> f.getName().replace(".dat", "")), suggestionsBuilder);

@@ -1,4 +1,4 @@
-package redstonedubstep.mods.serverdatamanager;
+package redstonedubstep.mods.serverdataaccessor;
 
 import org.apache.commons.lang3.tuple.Pair;
 

@@ -1,19 +1,19 @@
-package redstonedubstep.mods.serverdatamanager.commands;
+package redstonedubstep.mods.serverdataaccessor.commands;
 
 import com.mojang.brigadier.CommandDispatcher;
 
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import redstonedubstep.mods.serverdatamanager.SDMConfig;
-import redstonedubstep.mods.serverdatamanager.commands.server.CrashReportsCommand;
-import redstonedubstep.mods.serverdatamanager.commands.server.LogsCommand;
-import redstonedubstep.mods.serverdatamanager.commands.server.ServerPropertiesCommand;
-import redstonedubstep.mods.serverdatamanager.commands.world.AdvancementsCommand;
-import redstonedubstep.mods.serverdatamanager.commands.world.DimensionDataCommand;
-import redstonedubstep.mods.serverdatamanager.commands.world.PlayerDataCommand;
-import redstonedubstep.mods.serverdatamanager.commands.world.RegionFileCommand;
-import redstonedubstep.mods.serverdatamanager.commands.world.StatisticsCommand;
-import redstonedubstep.mods.serverdatamanager.commands.world.WorldDataCommand;
+import redstonedubstep.mods.serverdataaccessor.SDMConfig;
+import redstonedubstep.mods.serverdataaccessor.commands.server.CrashReportsCommand;
+import redstonedubstep.mods.serverdataaccessor.commands.server.LogsCommand;
+import redstonedubstep.mods.serverdataaccessor.commands.server.ServerPropertiesCommand;
+import redstonedubstep.mods.serverdataaccessor.commands.world.AdvancementsCommand;
+import redstonedubstep.mods.serverdataaccessor.commands.world.DimensionDataCommand;
+import redstonedubstep.mods.serverdataaccessor.commands.world.PlayerDataCommand;
+import redstonedubstep.mods.serverdataaccessor.commands.world.RegionFileCommand;
+import redstonedubstep.mods.serverdataaccessor.commands.world.StatisticsCommand;
+import redstonedubstep.mods.serverdataaccessor.commands.world.WorldDataCommand;
 
 public class CommandRoot {
 	public static void registerServerDataCommand(CommandDispatcher<CommandSourceStack> dispatcher) {

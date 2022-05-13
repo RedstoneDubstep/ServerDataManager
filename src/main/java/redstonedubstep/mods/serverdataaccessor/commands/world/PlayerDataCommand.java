@@ -1,4 +1,4 @@
-package redstonedubstep.mods.serverdatamanager.commands.world;
+package redstonedubstep.mods.serverdataaccessor.commands.world;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,8 +26,8 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.level.storage.LevelResource;
-import redstonedubstep.mods.serverdatamanager.util.FormatUtil;
-import redstonedubstep.mods.serverdatamanager.util.TagFormatUtil;
+import redstonedubstep.mods.serverdataaccessor.util.FormatUtil;
+import redstonedubstep.mods.serverdataaccessor.util.TagFormatUtil;
 
 public class PlayerDataCommand {
 	private static final SuggestionProvider<CommandSourceStack> SUGGEST_PLAYER_DATA_FILES = (ctx, suggestionsBuilder) -> SharedSuggestionProvider.suggest(FormatUtil.safeArrayStream(ctx.getSource().getServer().getWorldPath(LevelResource.PLAYER_DATA_DIR).toFile().listFiles()).filter(f -> f.getName().endsWith(".dat")).map(f -> f.getName().replace(".dat", "")), suggestionsBuilder);

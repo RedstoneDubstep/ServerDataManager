@@ -1,4 +1,4 @@
-package redstonedubstep.mods.serverdatamanager.commands.world;
+package redstonedubstep.mods.serverdataaccessor.commands.world;
 
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
@@ -21,7 +21,7 @@ import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.level.storage.WorldData;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.registries.RegistryManager;
-import redstonedubstep.mods.serverdatamanager.util.TagFormatUtil;
+import redstonedubstep.mods.serverdataaccessor.util.TagFormatUtil;
 
 public class WorldDataCommand {
 	private static final SuggestionProvider<CommandSourceStack> SUGGEST_REGISTRY = (ctx, suggestionsBuilder) -> SharedSuggestionProvider.suggestResource(RegistryManager.ACTIVE.takeSnapshot(true).keySet().stream(), suggestionsBuilder);

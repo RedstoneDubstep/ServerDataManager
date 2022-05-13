@@ -1,4 +1,4 @@
-package redstonedubstep.mods.serverdatamanager.commands.server;
+package redstonedubstep.mods.serverdataaccessor.commands.server;
 
 import java.util.Properties;
 

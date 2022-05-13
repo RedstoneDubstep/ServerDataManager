@@ -1,4 +1,4 @@
-package redstonedubstep.mods.serverdatamanager.commands.server;
+package redstonedubstep.mods.serverdataaccessor.commands.server;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -29,7 +29,7 @@ import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraftforge.fml.loading.FMLPaths;
-import redstonedubstep.mods.serverdatamanager.util.FormatUtil;
+import redstonedubstep.mods.serverdataaccessor.util.FormatUtil;
 
 public class CrashReportsCommand {
 	private static final SuggestionProvider<CommandSourceStack> SUGGEST_CRASH_REPORTS = (ctx, suggestionsBuilder) -> SharedSuggestionProvider.suggest(FormatUtil.safeArrayStream(FMLPaths.GAMEDIR.get().resolve("crash-reports").toFile().listFiles()).map(f -> f.getName().replace(".txt", "")), suggestionsBuilder);

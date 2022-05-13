@@ -17,7 +17,7 @@ apply plugin: 'org.parchmentmc.librarian.forgegradle'
 
 group = 'redstonedubstep.mods'
 version = '1.0'
-archivesBaseName = 'serverdatamanager'
+archivesBaseName = 'serverdataaccessor'
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
@@ -46,7 +46,7 @@ minecraft {
             property 'forge.logging.console.level', 'debug'
 
             mods {
-                serverdatamanager {
+                serverdataaccessor {
                     source sourceSets.main
                 }
             }
@@ -63,7 +63,7 @@ minecraft {
             property 'forge.logging.console.level', 'debug'
 
             mods {
-                serverdatamanager {
+                serverdataaccessor {
                     source sourceSets.main
                 }
             }
@@ -78,10 +78,10 @@ minecraft {
             // Recommended logging level for the console
             property 'forge.logging.console.level', 'debug'
 
-            args '--mod', 'serverdatamanager', '--all', '--output', file('src/generated/resources/')
+            args '--mod', 'serverdataaccessor', '--all', '--output', file('src/generated/resources/')
 
             mods {
-                serverdatamanager {
+                serverdataaccessor {
                     source sourceSets.main
                 }
             }
@@ -116,10 +116,10 @@ dependencies {
 
 jar {
     manifest {
-        attributes(["Specification-Title": "ServerDataManager",
+        attributes(["Specification-Title": "ServerDataAccessor",
                     "Specification-Vendor": "Redstone_Dubstep",
                     "Specification-Version": "${version}",
-                    "Implementation-Title": "ServerDataManager",
+                    "Implementation-Title": "ServerDataAccessor",
                     "Implementation-Version": "${version}",
                     "Implementation-Vendor" :"Redstone_Dubstep",
                     "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")])

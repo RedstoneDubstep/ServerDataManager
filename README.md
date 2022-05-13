@@ -1,4 +1,4 @@
-[![](http://cf.way2muchnoise.eu/full_serverdatamanager_downloads.svg)](https://www.curseforge.com/minecraft/mc-mods/serverdatamanager) [![](http://cf.way2muchnoise.eu/versions/For%20MC_serverdatamanager_all.svg)](https://www.curseforge.com/minecraft/mc-mods/serverdatamanager/files)
+[![](http://cf.way2muchnoise.eu/full_serverdataaccessor_downloads.svg)](https://www.curseforge.com/minecraft/mc-mods/serverdataaccessor) [![](http://cf.way2muchnoise.eu/versions/For%20MC_serverdataaccessor_all.svg)](https://www.curseforge.com/minecraft/mc-mods/serverdataaccessor/files)
 
 A server utility mod that gives admins ingame insight into the server's data.
 ### Usage

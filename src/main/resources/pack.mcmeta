@@ -1,6 +1,6 @@
 {
     "pack": {
-        "description": "serverdatamanager resources",
+        "description": "serverdataaccessor resources",
         "pack_format": 6
     }
 }

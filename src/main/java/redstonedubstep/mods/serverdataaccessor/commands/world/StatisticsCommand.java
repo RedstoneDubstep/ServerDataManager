@@ -1,4 +1,4 @@
-package redstonedubstep.mods.serverdatamanager.commands.world;
+package redstonedubstep.mods.serverdataaccessor.commands.world;
 
 import java.io.File;
 import java.util.Collection;
@@ -41,8 +41,8 @@ import net.minecraft.stats.Stat;
 import net.minecraft.stats.StatType;
 import net.minecraft.stats.StatsCounter;
 import net.minecraft.world.level.storage.LevelResource;
-import redstonedubstep.mods.serverdatamanager.util.FormatUtil;
-import redstonedubstep.mods.serverdatamanager.util.StatUtil;
+import redstonedubstep.mods.serverdataaccessor.util.FormatUtil;
+import redstonedubstep.mods.serverdataaccessor.util.StatUtil;
 
 public class StatisticsCommand {
 	private static final SuggestionProvider<CommandSourceStack> SUGGEST_STATS = (ctx, suggestionsBuilder) -> SharedSuggestionProvider.suggestResource(StatUtil.getStatType(ctx, "type").getRegistry().keySet(), suggestionsBuilder);

@@ -1,4 +1,4 @@
-package redstonedubstep.mods.serverdatamanager.commands.world;
+package redstonedubstep.mods.serverdataaccessor.commands.world;
 
 import java.io.File;
 
