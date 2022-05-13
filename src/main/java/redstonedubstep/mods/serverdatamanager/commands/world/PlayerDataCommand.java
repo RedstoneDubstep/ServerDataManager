@@ -37,8 +37,8 @@ public class PlayerDataCommand {
 				.then(Commands.literal("count").executes(PlayerDataCommand::countPlayerDataFiles))
 				.then(Commands.literal("get")
 						.then(Commands.argument("name", StringArgumentType.word()).suggests(SUGGEST_PLAYER_DATA_FILES).executes(ctx -> sendPlayerData(ctx, StringArgumentType.getString(ctx, "name"), null, 1))
-								.then(Commands.argument("path", NbtPathArgument.nbtPath()).executes(ctx -> sendPlayerData(ctx, StringArgumentType.getString(ctx, "name"), NbtPathArgument.getPath(ctx, "path"), 1))
-										.then(Commands.argument("page", IntegerArgumentType.integer(1)).executes(ctx -> sendPlayerData(ctx, StringArgumentType.getString(ctx, "name"), NbtPathArgument.getPath(ctx, "path"), IntegerArgumentType.getInteger(ctx, "page")))))));
+								.then(Commands.argument("path", IntegerArgumentType.integer(1)).executes(ctx -> sendPlayerData(ctx, StringArgumentType.getString(ctx, "name"), null, IntegerArgumentType.getInteger(ctx, "page")))
+										.then(Commands.argument("page", NbtPathArgument.nbtPath()).executes(ctx -> sendPlayerData(ctx, StringArgumentType.getString(ctx, "name"), NbtPathArgument.getPath(ctx, "path"), IntegerArgumentType.getInteger(ctx, "page")))))));
 	}
 
 	private static int sendPlayerData(CommandContext<CommandSourceStack> ctx, String name, NbtPath path, int page) throws CommandSyntaxException {
@@ -101,7 +101,7 @@ public class PlayerDataCommand {
 
 		int pageTagEntries = TagFormatUtil.getTagSize(foundTag);
 
-		ctx.getSource().sendSuccess(new TranslatableComponent("Sending playerdata of player with UUID \"%1$s\" " + (pageTagEntries == -1 ? "" : "(%2$s total entries)") + ": %3$s", new TextComponent(fileName).withStyle(ChatFormatting.AQUA), totalTagEntries, NbtUtils.toPrettyComponent(foundTag)), false);
+		ctx.getSource().sendSuccess(new TranslatableComponent("Sending playerdata of player with UUID \"%1$s\" at path \"%2$s\"" + (pageTagEntries == -1 ? "" : " (%3$s total entries)") + ": %4$s", new TextComponent(fileName).withStyle(ChatFormatting.AQUA), new TextComponent(path != null ? path.toString() : "").withStyle(ChatFormatting.AQUA), totalTagEntries, NbtUtils.toPrettyComponent(foundTag)), false);
 
 		if (pageTagEntries >= 0 && totalPages > 1)
 			ctx.getSource().sendSuccess(new TranslatableComponent("Displaying page %1$s out of %2$s with %3$s entries", currentPage + 1, totalPages, pageTagEntries), false);
