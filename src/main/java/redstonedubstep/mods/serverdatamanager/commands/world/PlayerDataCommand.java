@@ -2,7 +2,6 @@ package redstonedubstep.mods.serverdatamanager.commands.world;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.UUID;
 
@@ -27,12 +26,11 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.level.storage.LevelResource;
-import net.minecraftforge.fml.loading.FMLPaths;
 import redstonedubstep.mods.serverdatamanager.util.FormatUtil;
 import redstonedubstep.mods.serverdatamanager.util.TagFormatUtil;
 
 public class PlayerDataCommand {
-	private static final SuggestionProvider<CommandSourceStack> SUGGEST_PLAYER_DATA_FILES = (ctx, suggestionsBuilder) -> SharedSuggestionProvider.suggest(FormatUtil.safeArrayStream(FMLPaths.GAMEDIR.get().resolve(Paths.get("world", "playerdata")).toFile().listFiles()).filter(f -> f.getName().endsWith(".dat")).map(f -> f.getName().replace(".dat", "")), suggestionsBuilder);
+	private static final SuggestionProvider<CommandSourceStack> SUGGEST_PLAYER_DATA_FILES = (ctx, suggestionsBuilder) -> SharedSuggestionProvider.suggest(FormatUtil.safeArrayStream(ctx.getSource().getServer().getWorldPath(LevelResource.PLAYER_DATA_DIR).toFile().listFiles()).filter(f -> f.getName().endsWith(".dat")).map(f -> f.getName().replace(".dat", "")), suggestionsBuilder);
 
 	public static ArgumentBuilder<CommandSourceStack, ?> register() {
 		return Commands.literal("playerdata")
@@ -112,7 +110,7 @@ public class PlayerDataCommand {
 	}
 
 	private static int countPlayerDataFiles(CommandContext<CommandSourceStack> ctx) {
-		File[] playerDataFiles = FMLPaths.GAMEDIR.get().resolve(Paths.get("world", "playerdata")).toFile().listFiles();
+		File[] playerDataFiles = ctx.getSource().getServer().getWorldPath(LevelResource.PLAYER_DATA_DIR).toFile().listFiles();
 		int count = playerDataFiles == null ? 0 : (int)Arrays.stream(playerDataFiles).filter(f -> f.getName().endsWith(".dat")).count();
 
 		if (count == 0)

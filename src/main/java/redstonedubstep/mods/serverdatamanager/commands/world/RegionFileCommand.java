@@ -1,7 +1,6 @@
 package redstonedubstep.mods.serverdatamanager.commands.world;
 
 import java.io.File;
-import java.nio.file.Paths;
 
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
@@ -9,7 +8,7 @@ import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.TranslatableComponent;
-import net.minecraftforge.fml.loading.FMLPaths;
+import net.minecraft.world.level.storage.LevelResource;
 
 public class RegionFileCommand {
 	public static ArgumentBuilder<CommandSourceStack, ?> register() {
@@ -20,7 +19,7 @@ public class RegionFileCommand {
 	}
 
 	private static int getRegionFolderInformation(CommandContext<CommandSourceStack> ctx, String path) {
-		File regionFolder = FMLPaths.GAMEDIR.get().resolve(Paths.get("world", path)).toFile();
+		File regionFolder = ctx.getSource().getServer().getWorldPath(LevelResource.ROOT).resolve(path).toFile();
 		File[] regionFiles = regionFolder.listFiles();
 		long totalSize = 0;
 
