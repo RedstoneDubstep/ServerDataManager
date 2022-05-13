@@ -2,12 +2,12 @@
 
 A server utility mod that gives admins ingame insight into the server's data.
 ### Usage
-This mod adds two commands that are usable by server admins. The prior one is for managing the server data, the latter one's purpose is managing the world data (and can thus also be used in singleplayer). Both commands have subcommands with which specific data can be retrieved.
+This mod adds two commands that are usable by server admins. The former one is for managing the server data, the latter one's purpose is managing the world data (and can thus also be used in singleplayer). Both commands have subcommands with which specific data can be retrieved.
 
 */serverdata [subcommand]*:
 - *crash-reports* allows you to get access to the content of crash reports, either via sending them into the chat or copying the content to clipboard
 - *logs* allows you to get access to the content of log files, either via sending them into the chat or copying the content to clipboard
-- *properties* allows you to read out the server's properties and their respective values
+- *properties* allows you to read the server's properties, with all the property keys and their respective values
 
 */worlddata [subcommand]*:
 - *advancements* allows you to count or read out the advancements of specific players
@@ -17,8 +17,8 @@ This mod adds two commands that are usable by server admins. The prior one is fo
 - *statistics* allows you to read and compare either all or single statistics of specific or all players
 - *worlddata* allows you to read the data of the world instance
 
-Accessing the server- or world data might be useful for server admins that don't have direct file access (via e.g. a server manager) to the server's files.
+Accessing the server or world data might be useful for server admins that don't have direct file access to the server's files, and additionally, accessing the data via this mod is also a bit more user-friendly than through a file explorer.
 
-This mod does not add support for all types of server- or world data, for exammple managing datapacks or configuration files, since there are either already commands or similar means in Vanilla or Forge that handle this data well enough, or the data is for internal use only and thus irrelevant for server admins.
+This mod does not add support for all types of server or world data, for example managing datapacks or configuration files, since there are either already commands or similar means in Vanilla or Forge that handle this data well enough, or the data is for internal use only and thus irrelevant for server admins.
 
 Finally, this mod is serverside only.
