@@ -28,10 +28,11 @@ import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.level.storage.LevelResource;
 import net.minecraftforge.fml.loading.FMLPaths;
+import redstonedubstep.mods.serverdatamanager.util.FormatUtil;
 import redstonedubstep.mods.serverdatamanager.util.TagFormatUtil;
 
 public class PlayerDataCommand {
-	private static final SuggestionProvider<CommandSourceStack> SUGGEST_PLAYER_DATA_FILES = (ctx, suggestionsBuilder) -> SharedSuggestionProvider.suggest(Arrays.stream(FMLPaths.GAMEDIR.get().resolve(Paths.get("world", "playerdata")).toFile().listFiles()).filter(f -> f.getName().endsWith(".dat")).map(f -> f.getName().replace(".dat", "")), suggestionsBuilder);
+	private static final SuggestionProvider<CommandSourceStack> SUGGEST_PLAYER_DATA_FILES = (ctx, suggestionsBuilder) -> SharedSuggestionProvider.suggest(FormatUtil.safeArrayStream(FMLPaths.GAMEDIR.get().resolve(Paths.get("world", "playerdata")).toFile().listFiles()).filter(f -> f.getName().endsWith(".dat")).map(f -> f.getName().replace(".dat", "")), suggestionsBuilder);
 
 	public static ArgumentBuilder<CommandSourceStack, ?> register() {
 		return Commands.literal("playerdata")
@@ -43,9 +44,9 @@ public class PlayerDataCommand {
 	}
 
 	private static int sendPlayerData(CommandContext<CommandSourceStack> ctx, String name, NbtPath path, int page) throws CommandSyntaxException {
-		File[] playerDataFolder = ctx.getSource().getServer().getWorldPath(LevelResource.PLAYER_DATA_DIR).toFile().listFiles();
+		File[] playerDataFiles = ctx.getSource().getServer().getWorldPath(LevelResource.PLAYER_DATA_DIR).toFile().listFiles();
 
-		if (playerDataFolder == null || playerDataFolder.length == 0) {
+		if (playerDataFiles == null || playerDataFiles.length == 0) {
 			ctx.getSource().sendFailure(new TextComponent("No playerdata files could be found"));
 			return 0;
 		}
@@ -57,7 +58,7 @@ public class PlayerDataCommand {
 			UUID uuid = ctx.getSource().getServer().getProfileCache().get(name).map(GameProfile::getId).orElse(null);
 
 			if (uuid != null) {
-				playerDataFile = Arrays.stream(playerDataFolder).filter(f -> f.getName().contains(uuid.toString()) && f.getName().endsWith(".dat")).findFirst().orElse(null);
+				playerDataFile = Arrays.stream(playerDataFiles).filter(f -> f.getName().contains(uuid.toString()) && f.getName().endsWith(".dat")).findFirst().orElse(null);
 				fileName = uuid.toString();
 			}
 			else {
@@ -66,7 +67,7 @@ public class PlayerDataCommand {
 			}
 		}
 		else {
-			playerDataFile = Arrays.stream(playerDataFolder).filter(f -> f.getName().contains(name) && f.getName().endsWith(".dat")).findFirst().orElse(null);
+			playerDataFile = Arrays.stream(playerDataFiles).filter(f -> f.getName().contains(name) && f.getName().endsWith(".dat")).findFirst().orElse(null);
 			fileName = name;
 		}
 

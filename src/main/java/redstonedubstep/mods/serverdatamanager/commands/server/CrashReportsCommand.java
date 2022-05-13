@@ -32,7 +32,7 @@ import net.minecraftforge.fml.loading.FMLPaths;
 import redstonedubstep.mods.serverdatamanager.util.FormatUtil;
 
 public class CrashReportsCommand {
-	private static final SuggestionProvider<CommandSourceStack> SUGGEST_CRASH_REPORTS = (ctx, suggestionsBuilder) -> SharedSuggestionProvider.suggest(Arrays.stream(FMLPaths.GAMEDIR.get().resolve("crash-reports").toFile().listFiles()).map(f -> f.getName().replace(".txt", "")), suggestionsBuilder);
+	private static final SuggestionProvider<CommandSourceStack> SUGGEST_CRASH_REPORTS = (ctx, suggestionsBuilder) -> SharedSuggestionProvider.suggest(FormatUtil.safeArrayStream(FMLPaths.GAMEDIR.get().resolve("crash-reports").toFile().listFiles()).map(f -> f.getName().replace(".txt", "")), suggestionsBuilder);
 
 	public static ArgumentBuilder<CommandSourceStack, ?> register() {
 		return Commands.literal("crash-reports")

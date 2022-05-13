@@ -2,7 +2,9 @@ package redstonedubstep.mods.serverdatamanager.util;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -40,5 +42,12 @@ public class FormatUtil {
 
 	public static List<Pair<String, String>> splitLogLines(List<String> logLines) {
 		return logLines.stream().map(s -> Pair.of(s, s.split("(\\[[^]]*].){3}")[1])).map(p -> Pair.of(p.getLeft().substring(0, p.getLeft().length() - p.getRight().length()), p.getRight())).toList();
+	}
+
+	public static <T> Stream<T> safeArrayStream(T[] array) {
+		if (array != null)
+			return Arrays.stream(array);
+		else
+			return Stream.of();
 	}
 }

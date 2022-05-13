@@ -36,7 +36,7 @@ import net.minecraftforge.fml.loading.FMLPaths;
 import redstonedubstep.mods.serverdatamanager.util.FormatUtil;
 
 public class LogsCommand {
-	private static final SuggestionProvider<CommandSourceStack> SUGGEST_LOG_FILES = (ctx, suggestionsBuilder) -> SharedSuggestionProvider.suggest(Arrays.stream(FMLPaths.GAMEDIR.get().resolve("logs").toFile().listFiles()).map(f -> f.getName().replace(".gz", "").replace(".log", "")), suggestionsBuilder);
+	private static final SuggestionProvider<CommandSourceStack> SUGGEST_LOG_FILES = (ctx, suggestionsBuilder) -> SharedSuggestionProvider.suggest(FormatUtil.safeArrayStream(FMLPaths.GAMEDIR.get().resolve("logs").toFile().listFiles()).map(f -> f.getName().replace(".gz", "").replace(".log", "")), suggestionsBuilder);
 
 	public static ArgumentBuilder<CommandSourceStack, ?> register() {
 		return Commands.literal("logs")

@@ -1,7 +1,6 @@
 package redstonedubstep.mods.serverdatamanager.commands.world;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -80,7 +79,7 @@ public class StatisticsCommand {
 
 	private static int getStatFrom(CommandContext<CommandSourceStack> ctx, Collection<GameProfile> profiles, StatType<?> statType, ResourceLocation statId, int page) throws CommandSyntaxException {
 		File statsFolder = ctx.getSource().getServer().getWorldPath(LevelResource.PLAYER_STATS_DIR).toFile();
-		Collection<?> statSource = profiles != null ? profiles : Arrays.stream(statsFolder.listFiles()).toList();
+		Collection<?> statSource = profiles != null ? profiles : FormatUtil.safeArrayStream(statsFolder.listFiles()).toList();
 		StatsCounter statsCollection = StatUtil.mergeStats(statSource, statType, Optional.ofNullable(statId), ctx.getSource().getServer());
 		Pair<Stat<?>, Integer> stat = StatUtil.getStatFromCollection(statsCollection, statType, statId);
 		Map<Stat<?>, Integer> statMap = stat != null ? Map.of(stat.getLeft(), stat.getRight()) : statsCollection.stats;
@@ -121,7 +120,7 @@ public class StatisticsCommand {
 
 		MinecraftServer server = ctx.getSource().getServer();
 		File statsFolder = server.getWorldPath(LevelResource.PLAYER_STATS_DIR).toFile();
-		Collection<?> statSource = profiles != null ? profiles : Arrays.stream(statsFolder.listFiles()).toList();
+		Collection<?> statSource = profiles != null ? profiles : FormatUtil.safeArrayStream(statsFolder.listFiles()).toList();
 		Stat<?> stat = null;
 		Pair<String, Integer> best = null;
 		TranslatableComponent playerReference = new TranslatableComponent(profiles == null ? "all %1$s players" : "%1$s players", statSource.size());
