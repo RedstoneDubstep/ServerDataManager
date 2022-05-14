@@ -5,26 +5,25 @@ import java.io.File;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
-import net.minecraft.network.chat.TranslatableComponent;
-import net.minecraft.world.level.storage.LevelResource;
+import net.minecraft.command.CommandSource;
+import net.minecraft.command.Commands;
+import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.storage.FolderName;
 
 public class RegionFileCommand {
-	public static ArgumentBuilder<CommandSourceStack, ?> register() {
+	public static ArgumentBuilder<CommandSource, ?> register() {
 		return Commands.literal("regions")
-				.then(Commands.literal("entities").executes(ctx -> getRegionFolderInformation(ctx, "entities")))
 				.then(Commands.literal("points-of-interests").executes(ctx -> getRegionFolderInformation(ctx, "poi")))
 				.then(Commands.literal("region").executes(ctx -> getRegionFolderInformation(ctx, "region")));
 	}
 
-	private static int getRegionFolderInformation(CommandContext<CommandSourceStack> ctx, String path) {
-		File regionFolder = ctx.getSource().getServer().getWorldPath(LevelResource.ROOT).resolve(path).toFile();
+	private static int getRegionFolderInformation(CommandContext<CommandSource> ctx, String path) {
+		File regionFolder = ctx.getSource().getServer().getWorldPath(FolderName.ROOT).resolve(path).toFile();
 		File[] regionFiles = regionFolder.listFiles();
 		long totalSize = 0;
 
 		if (regionFiles == null || regionFiles.length == 0) {
-			ctx.getSource().sendFailure(new TranslatableComponent("Could not find region files in folder \"%s\"", path));
+			ctx.getSource().sendFailure(new TranslationTextComponent("Could not find region files in folder \"%s\"", path));
 			return 0;
 		}
 
@@ -37,7 +36,7 @@ public class RegionFileCommand {
 			}
 		}
 
-		ctx.getSource().sendSuccess(new TranslatableComponent("Found %1$s region files of type \"%2$s\", of which %3$s are empty, with a total size of %4$s kilobytes", regionFiles.length, path, regionFiles.length - notEmptyFiles, totalSize / 1024), false);
+		ctx.getSource().sendSuccess(new TranslationTextComponent("Found %1$s region files of type \"%2$s\", of which %3$s are empty, with a total size of %4$s kilobytes", regionFiles.length, path, regionFiles.length - notEmptyFiles, totalSize / 1024), false);
 		return regionFiles.length;
 	}
 }

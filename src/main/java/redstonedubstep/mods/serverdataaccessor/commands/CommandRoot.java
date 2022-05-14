@@ -2,8 +2,8 @@ package redstonedubstep.mods.serverdataaccessor.commands;
 
 import com.mojang.brigadier.CommandDispatcher;
 
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
+import net.minecraft.command.CommandSource;
+import net.minecraft.command.Commands;
 import redstonedubstep.mods.serverdataaccessor.SDMConfig;
 import redstonedubstep.mods.serverdataaccessor.commands.server.CrashReportsCommand;
 import redstonedubstep.mods.serverdataaccessor.commands.server.LogsCommand;
@@ -16,14 +16,14 @@ import redstonedubstep.mods.serverdataaccessor.commands.world.StatisticsCommand;
 import redstonedubstep.mods.serverdataaccessor.commands.world.WorldDataCommand;
 
 public class CommandRoot {
-	public static void registerServerDataCommand(CommandDispatcher<CommandSourceStack> dispatcher) {
+	public static void registerServerDataCommand(CommandDispatcher<CommandSource> dispatcher) {
 		dispatcher.register(Commands.literal("serverdata").requires(player -> player.hasPermission(SDMConfig.CONFIG.serverdataCommandPermissionLevel.get()))
 				.then(CrashReportsCommand.register())
 				.then(LogsCommand.register())
 				.then(ServerPropertiesCommand.register()));
 	}
 
-	public static void registerWorldDataCommand(CommandDispatcher<CommandSourceStack> dispatcher) {
+	public static void registerWorldDataCommand(CommandDispatcher<CommandSource> dispatcher) {
 		dispatcher.register(Commands.literal("worlddata").requires(player -> player.hasPermission(SDMConfig.CONFIG.worlddataCommandPermissionLevel.get()))
 				.then(AdvancementsCommand.register())
 				.then(DimensionDataCommand.register())

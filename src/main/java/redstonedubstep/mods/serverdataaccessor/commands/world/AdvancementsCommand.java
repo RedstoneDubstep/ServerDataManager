@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -16,29 +17,30 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 
-import net.minecraft.ChatFormatting;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.advancements.CriterionProgress;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
-import net.minecraft.commands.SharedSuggestionProvider;
-import net.minecraft.commands.arguments.GameProfileArgument;
-import net.minecraft.commands.arguments.ResourceLocationArgument;
-import net.minecraft.network.chat.ComponentUtils;
-import net.minecraft.network.chat.HoverEvent;
-import net.minecraft.network.chat.HoverEvent.Action;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.advancements.PlayerAdvancements;
+import net.minecraft.command.CommandSource;
+import net.minecraft.command.Commands;
+import net.minecraft.command.ISuggestionProvider;
+import net.minecraft.command.arguments.GameProfileArgument;
+import net.minecraft.command.arguments.ResourceLocationArgument;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.PlayerAdvancements;
+import net.minecraft.util.text.IFormattableTextComponent;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextComponentUtils;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.util.text.event.HoverEvent;
+import net.minecraft.util.text.event.HoverEvent.Action;
 import net.minecraftforge.common.util.FakePlayer;
 
 public class AdvancementsCommand {
-	private static final SuggestionProvider<CommandSourceStack> SUGGEST_ADVANCEMENTS = (ctx, suggestionsBuilder) -> SharedSuggestionProvider.suggestResource(getPlayerAdvancements(ctx, GameProfileArgument.getGameProfiles(ctx, "player")).advancements.entrySet().stream().filter(adv -> adv.getValue().getPercent() > 0 && adv.getKey().getRewards().getRecipes().length == 0).map(adv -> adv.getKey().getId()), suggestionsBuilder);
-	private static final SuggestionProvider<CommandSourceStack> SUGGEST_RECIPES = (ctx, suggestionsBuilder) -> SharedSuggestionProvider.suggestResource(getPlayerAdvancements(ctx, GameProfileArgument.getGameProfiles(ctx, "player")).advancements.entrySet().stream().filter(adv -> adv.getValue().getPercent() > 0 && adv.getKey().getRewards().getRecipes().length > 0).map(adv -> adv.getKey().getId()), suggestionsBuilder);
+	private static final SuggestionProvider<CommandSource> SUGGEST_ADVANCEMENTS = (ctx, suggestionsBuilder) -> ISuggestionProvider.suggestResource(getPlayerAdvancements(ctx, GameProfileArgument.getGameProfiles(ctx, "player")).advancements.entrySet().stream().filter(adv -> adv.getValue().hasProgress() && adv.getKey().getRewards().recipes.length == 0).map(adv -> adv.getKey().getId()), suggestionsBuilder);
+	private static final SuggestionProvider<CommandSource> SUGGEST_RECIPES = (ctx, suggestionsBuilder) -> ISuggestionProvider.suggestResource(getPlayerAdvancements(ctx, GameProfileArgument.getGameProfiles(ctx, "player")).advancements.entrySet().stream().filter(adv -> adv.getValue().hasProgress() && adv.getKey().getRewards().recipes.length > 0).map(adv -> adv.getKey().getId()), suggestionsBuilder);
 
-	public static ArgumentBuilder<CommandSourceStack, ?> register() {
+	public static ArgumentBuilder<CommandSource, ?> register() {
 		return Commands.literal("advancements")
 				.then(Commands.argument("player", GameProfileArgument.gameProfile())
 						.then(Commands.literal("count").executes(ctx -> countAdvancements(ctx, GameProfileArgument.getGameProfiles(ctx, "player"))))
@@ -48,29 +50,31 @@ public class AdvancementsCommand {
 								.then(Commands.argument("recipe", ResourceLocationArgument.id()).suggests(SUGGEST_RECIPES).executes(ctx -> getAdvancementsFrom(ctx, GameProfileArgument.getGameProfiles(ctx, "player"), true, ResourceLocationArgument.getAdvancement(ctx, "recipe"))))));
 	}
 
-	private static int getAdvancementsFrom(CommandContext<CommandSourceStack> ctx, Collection<GameProfile> profiles, boolean recipe, Advancement advancement) throws CommandSyntaxException {
+	private static int getAdvancementsFrom(CommandContext<CommandSource> ctx, Collection<GameProfile> profiles, boolean recipe, Advancement advancement) throws CommandSyntaxException {
 		GameProfile profile = ensureOneTarget(profiles);
 		FakePlayer fakePlayer = new FakePlayer(ctx.getSource().getServer().overworld(), profile);
 		PlayerAdvancements playerAdvancements = ctx.getSource().getServer().getPlayerList().getPlayerAdvancements(fakePlayer);
+		String advancementReference = recipe ? "recipe advancement" : "advancement";
 
 		if (advancement == null) {
-			Stream<Pair<Advancement, Integer>> allAdvancements = playerAdvancements.advancements.entrySet().stream().map(e -> Pair.of(e.getKey(), (int)(e.getValue().getPercent() * 100))).filter(p -> p.getRight() > 0);
-			List<Pair<Advancement, Integer>> filteredAdvancements = allAdvancements.filter(p -> recipe ? p.getKey().getRewards().getRecipes().length > 0 : p.getKey().getRewards().getRecipes().length == 0).toList();
+			Stream<Pair<Advancement, Integer>> allAdvancements = playerAdvancements.advancements.entrySet().stream().map(e -> Pair.of(e.getKey(), (int)(getAdvancementPercent(e.getValue()) * 100))).filter(p -> p.getRight() > 0);
+			List<Pair<Advancement, Integer>> filteredAdvancements = allAdvancements.filter(p -> recipe ? p.getKey().getRewards().recipes.length > 0 : p.getKey().getRewards().recipes.length == 0).collect(Collectors.toList());
+			IFormattableTextComponent advancementList = TextComponentUtils.formatList(filteredAdvancements, p -> p.getKey().getChatComponent().copy().append(new TranslationTextComponent(" (%s%%)", p.getRight()).withStyle(TextFormatting.GRAY)));
 
 			if (filteredAdvancements.isEmpty()) {
-				ctx.getSource().sendFailure(new TranslatableComponent("No completed %1$sadvancements of player %2$s were found", recipe ? "recipe " : "", profile.getName()));
+				ctx.getSource().sendFailure(new TranslationTextComponent("No completed %1$ss of player %2$s were found", advancementReference, profile.getName()));
 				return 0;
 			}
 
-			ctx.getSource().sendSuccess(new TranslatableComponent("Sending all completed %1$sadvancements of player %2$s (%3$s): %4$s", recipe ? "recipe " : "", profile.getName(), filteredAdvancements.size(), ComponentUtils.formatList(filteredAdvancements, p -> p.getKey().getChatComponent().copy().append(new TranslatableComponent(" (%s%%)", p.getRight()).withStyle(ChatFormatting.GRAY)))), false);
+			ctx.getSource().sendSuccess(new TranslationTextComponent("Sending all completed %1$ss of player %2$s (%3$s): %4$s", advancementReference, profile.getName(), filteredAdvancements.size(), advancementList), false);
 			return filteredAdvancements.size();
 		}
 
 		AdvancementProgress advancementProgress = playerAdvancements.advancements.get(advancement);
-		int progress = (int)(advancementProgress.getPercent() * 100);
+		int progress = (int)(getAdvancementPercent(advancementProgress) * 100);
 
 		if (progress == 0) {
-			ctx.getSource().sendFailure(new TranslatableComponent("No progress on %1$sadvancement %2$s of player %3$s found", recipe ? "recipe " : "", advancement.getChatComponent(), profile.getName()));
+			ctx.getSource().sendFailure(new TranslationTextComponent("No progress on %1$s %2$s of player %3$s found", advancementReference, advancement.getChatComponent(), profile.getName()));
 			return 0;
 		}
 
@@ -78,11 +82,11 @@ public class AdvancementsCommand {
 
 		advancementProgress.getRemainingCriteria().forEach(s -> criteria.put(s, advancementProgress.getCriterion(s)));
 		advancementProgress.getCompletedCriteria().forEach(s -> criteria.put(s, advancementProgress.getCriterion(s)));
-		ctx.getSource().sendSuccess(new TranslatableComponent("Sending %1$sadvancement %2$s of player %3$s: %4$s%% complete, criteria: %5$s", recipe ? "recipe " : "", advancement.getChatComponent(), profile.getName(), progress, ComponentUtils.formatList(criteria.keySet(), n -> new TextComponent(n).withStyle(s -> s.applyFormat(criteria.get(n).isDone() ? ChatFormatting.GREEN : ChatFormatting.DARK_RED).withHoverEvent(new HoverEvent(Action.SHOW_TEXT, new TextComponent("Obtained: " + (criteria.get(n).isDone() ? criteria.get(n).getObtained() : "Never"))))))), false);
+		ctx.getSource().sendSuccess(new TranslationTextComponent("Sending %1$s %2$s of player %3$s: %4$s%% complete, criteria: %5$s", advancementReference, advancement.getChatComponent(), profile.getName(), progress, TextComponentUtils.formatList(criteria.keySet(), n -> new StringTextComponent(n).withStyle(s -> s.applyFormat(criteria.get(n).isDone() ? TextFormatting.GREEN : TextFormatting.DARK_RED).withHoverEvent(new HoverEvent(Action.SHOW_TEXT, new StringTextComponent("Obtained: " + (criteria.get(n).isDone() ? criteria.get(n).getObtained() : "Never"))))))), false);
 		return progress;
 	}
 
-	private static int countAdvancements(CommandContext<CommandSourceStack> ctx, Collection<GameProfile> profiles) throws CommandSyntaxException {
+	private static int countAdvancements(CommandContext<CommandSource> ctx, Collection<GameProfile> profiles) throws CommandSyntaxException {
 		GameProfile profile = ensureOneTarget(profiles);
 		FakePlayer fakePlayer = new FakePlayer(ctx.getSource().getServer().overworld(), profile);
 		PlayerAdvancements playerAdvancements = ctx.getSource().getServer().getPlayerList().getPlayerAdvancements(fakePlayer);
@@ -90,29 +94,59 @@ public class AdvancementsCommand {
 		int totalAdvancements = 0;
 
 		for (Entry<Advancement, AdvancementProgress> advancement : playerAdvancements.advancements.entrySet()) {
-			if (advancement.getValue().getPercent() > 0.0F) {
-				if (advancement.getKey().getRewards().getRecipes().length > 0)
+			if (getAdvancementPercent(advancement.getValue()) > 0.0F) {
+				if (advancement.getKey().getRewards().recipes.length > 0)
 					recipeAdvancements++;
 
 				totalAdvancements++;
 			}
 		}
 
-		ctx.getSource().sendSuccess(new TranslatableComponent("Player %1$s has %2$s completed advancements, %3$s of which are recipe advancements", profile.getName(), totalAdvancements, recipeAdvancements), false);
+		ctx.getSource().sendSuccess(new TranslationTextComponent("Player %1$s has %2$s completed advancements, %3$s of which are recipe advancements", profile.getName(), totalAdvancements, recipeAdvancements), false);
 		return totalAdvancements;
 	}
 
 	private static GameProfile ensureOneTarget(Collection<GameProfile> profiles) throws CommandSyntaxException {
 		if (profiles.size() > 1)
-			throw new SimpleCommandExceptionType(new TextComponent("Targeting multiple players is not supported!")).create();
+			throw new SimpleCommandExceptionType(new StringTextComponent("Targeting multiple players is not supported!")).create();
 
 		return profiles.iterator().next();
 	}
 
-	private static PlayerAdvancements getPlayerAdvancements(CommandContext<CommandSourceStack> ctx, Collection<GameProfile> profiles) throws CommandSyntaxException {
+	private static PlayerAdvancements getPlayerAdvancements(CommandContext<CommandSource> ctx, Collection<GameProfile> profiles) throws CommandSyntaxException {
 		GameProfile profile = ensureOneTarget(profiles);
 		MinecraftServer server = ctx.getSource().getServer();
 		FakePlayer fakePlayer = new FakePlayer(server.overworld(), profile);
+
 		return server.getPlayerList().getPlayerAdvancements(fakePlayer);
+	}
+
+	//These two methods are copied from AdvancementProgress because they have a @OnlyIn(Dist.CLIENT) annotation there
+	public static float getAdvancementPercent(AdvancementProgress progress) {
+		if (progress.requirements.length == 0)
+			return 0F;
+		else {
+			float total = (float)progress.requirements.length;
+			float completed = (float)countCompletedRequirements(progress);
+
+			return completed / total;
+		}
+	}
+
+	public static int countCompletedRequirements(AdvancementProgress progress) {
+		int count = 0;
+
+		for(String[] requirement : progress.requirements) {
+			for(String criterion : requirement) {
+				CriterionProgress criterionProgress = progress.getCriterion(criterion);
+
+				if (criterionProgress != null && criterionProgress.isDone()) {
+					count++;
+					break;
+				}
+			}
+		}
+
+		return count;
 	}
 }
