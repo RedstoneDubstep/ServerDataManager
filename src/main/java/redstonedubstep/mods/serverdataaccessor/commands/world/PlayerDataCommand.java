@@ -37,8 +37,8 @@ public class PlayerDataCommand {
 				.then(Commands.literal("count").executes(PlayerDataCommand::countPlayerDataFiles))
 				.then(Commands.literal("get")
 						.then(Commands.argument("name", StringArgumentType.word()).suggests(SUGGEST_PLAYER_DATA_FILES).executes(ctx -> sendPlayerData(ctx, StringArgumentType.getString(ctx, "name"), null, 1))
-								.then(Commands.argument("path", IntegerArgumentType.integer(1)).executes(ctx -> sendPlayerData(ctx, StringArgumentType.getString(ctx, "name"), null, IntegerArgumentType.getInteger(ctx, "page")))
-										.then(Commands.argument("page", NbtPathArgument.nbtPath()).executes(ctx -> sendPlayerData(ctx, StringArgumentType.getString(ctx, "name"), NbtPathArgument.getPath(ctx, "path"), IntegerArgumentType.getInteger(ctx, "page")))))));
+								.then(Commands.argument("page", IntegerArgumentType.integer(1)).executes(ctx -> sendPlayerData(ctx, StringArgumentType.getString(ctx, "name"), null, IntegerArgumentType.getInteger(ctx, "page")))
+										.then(Commands.argument("path", NbtPathArgument.nbtPath()).executes(ctx -> sendPlayerData(ctx, StringArgumentType.getString(ctx, "name"), NbtPathArgument.getPath(ctx, "path"), IntegerArgumentType.getInteger(ctx, "page")))))));
 	}
 
 	private static int sendPlayerData(CommandContext<CommandSourceStack> ctx, String name, NbtPath path, int page) throws CommandSyntaxException {

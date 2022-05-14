@@ -1,8 +1,6 @@
 package redstonedubstep.mods.serverdataaccessor.util;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -19,11 +17,9 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap.Entry;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.Registry;
 import net.minecraft.network.chat.TranslatableComponent;
-import net.minecraft.network.protocol.game.ClientboundAwardStatsPacket;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.ServerStatsCounter;
 import net.minecraft.stats.Stat;
 import net.minecraft.stats.StatType;
@@ -33,8 +29,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.storage.LevelResource;
 public class StatUtil {
-	private static final Map<ServerPlayer, StatsCounter> PLAYER_STATS = new HashMap<>();
-
 	public static StatsCounter mergeStats(Iterable<?> targets, StatType<?> statType, Optional<ResourceLocation> statId, MinecraftServer server) {
 		StatsCounter statsCollection = new StatsCounter();
 
@@ -116,8 +110,8 @@ public class StatUtil {
 
 			return name.substring(0, 1).toUpperCase() + name.substring(1);
 		}
-		else
-			return key;
+
+		return key;
 	}
 
 	public static StatType<?> getStatType(CommandContext<CommandSourceStack> ctx, String argument) throws CommandSyntaxException {
@@ -126,21 +120,5 @@ public class StatUtil {
 		ResourceKey<StatType<?>> statKey = optional.orElseThrow(() -> new SimpleCommandExceptionType(new LiteralMessage("Unknown statistic")).create());
 
 		return ctx.getSource().getServer().registryAccess().registryOrThrow(Registry.STAT_TYPE_REGISTRY).getOptional(statKey).orElseThrow(() -> new SimpleCommandExceptionType(new LiteralMessage("Unknown statistic")).create());
-	}
-
-	public static void sendStats(ServerPlayer receiver, StatsCounter stats) {
-		ServerStatsCounter ownStats = receiver.server.getPlayerList().getPlayerStats(receiver);
-
-		ownStats.stats.forEach((stat, i) -> stats.stats.putIfAbsent(stat, 0));
-		receiver.connection.send(new ClientboundAwardStatsPacket(stats.stats));
-		StatUtil.enqueueStats(receiver, stats);
-	}
-
-	public static void enqueueStats(ServerPlayer player, StatsCounter stats) {
-		PLAYER_STATS.put(player, stats);
-	}
-
-	public static StatsCounter getQueuedStats(ServerPlayer player) {
-		return PLAYER_STATS.remove(player);
 	}
 }

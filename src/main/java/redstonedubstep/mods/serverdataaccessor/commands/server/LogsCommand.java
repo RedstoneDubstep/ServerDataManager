@@ -2,11 +2,11 @@ package redstonedubstep.mods.serverdataaccessor.commands.server;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -65,7 +65,7 @@ public class LogsCommand {
 		InputStream log;
 
 		try {
-			log = logPath.toFile().isFile() ? new FileInputStream(logPath.toFile()) : new GZIPInputStream(new FileInputStream(logGzPath.toFile()));
+			log = logPath.toFile().isFile() ? Files.newInputStream(logPath.toFile().toPath()) : new GZIPInputStream(Files.newInputStream(logGzPath.toFile().toPath()));
 		} catch(IOException e) {
 			ctx.getSource().sendFailure(new TextComponent("Couldn't find log file " + name));
 			return 0;

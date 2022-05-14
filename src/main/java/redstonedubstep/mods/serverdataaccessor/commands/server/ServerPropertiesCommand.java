@@ -32,6 +32,7 @@ public class ServerPropertiesCommand {
 
 		if (name.isEmpty()) {
 			Component propertiesText = ComponentUtils.formatList(serverProperties.entrySet(), e -> new TextComponent(e.getKey().toString()).withStyle(ChatFormatting.AQUA).append("=").append(new TextComponent(e.getValue().toString()).withStyle(ChatFormatting.GREEN)));
+
 			ctx.getSource().sendSuccess(new TranslatableComponent("The following %s properties were found: \n", serverProperties.entrySet().size()).append(propertiesText), false);
 			return serverProperties.entrySet().size();
 		}

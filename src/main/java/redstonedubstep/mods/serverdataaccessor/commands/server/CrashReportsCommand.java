@@ -2,13 +2,14 @@ package redstonedubstep.mods.serverdataaccessor.commands.server;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 import com.mojang.brigadier.arguments.BoolArgumentType;
@@ -50,7 +51,7 @@ public class CrashReportsCommand {
 		File[] crashReports = FMLPaths.GAMEDIR.get().resolve(Paths.get("crash-reports")).toFile().listFiles();
 
 		if (crashReports != null) {
-			String crashReportName = name.isEmpty() ? Arrays.stream(crashReports).filter(File::isFile).min((f1, f2) -> CharSequence.compare(f2.getName(), f1.getName())).map(f -> f.getName().replace(".txt", "")).orElse("latest") : name;
+			String crashReportName = name.isEmpty() ? Arrays.stream(crashReports).filter(File::isFile).min(Comparator.comparing(File::getName)).map(f -> f.getName().replace(".txt", "")).orElse("latest") : name;
 			File foundCrashReport = FMLPaths.GAMEDIR.get().resolve(Paths.get("crash-reports", crashReportName + ".txt")).toFile();
 
 			if (!foundCrashReport.isFile()) {
@@ -61,7 +62,7 @@ public class CrashReportsCommand {
 			InputStream crashReport;
 
 			try {
-				crashReport = new FileInputStream(foundCrashReport);
+				crashReport = Files.newInputStream(foundCrashReport.toPath());
 			} catch(IOException e) {
 				ctx.getSource().sendFailure(new TranslatableComponent(name.isEmpty() ? "Could not read latest crash report" : "Could not read crash report with name \"%s\"", crashReportName));
 				return 0;

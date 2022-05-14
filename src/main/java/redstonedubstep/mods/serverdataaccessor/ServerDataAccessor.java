@@ -10,8 +10,10 @@ import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.network.NetworkConstants;
 import redstonedubstep.mods.serverdataaccessor.commands.CommandRoot;
 
-@Mod("serverdataaccessor")
+@Mod(ServerDataAccessor.MODID)
 public class ServerDataAccessor {
+	public static final String MODID = "serverdataaccessor";
+
 	public ServerDataAccessor() {
 		ModLoadingContext.get().registerExtensionPoint(IExtensionPoint.DisplayTest.class, () -> new IExtensionPoint.DisplayTest(() -> NetworkConstants.IGNORESERVERONLY, (a, b) -> true));
 		MinecraftForge.EVENT_BUS.addListener(this::registerCommands);

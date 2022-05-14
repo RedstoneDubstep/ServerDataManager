@@ -35,8 +35,8 @@ import net.minecraft.server.PlayerAdvancements;
 import net.minecraftforge.common.util.FakePlayer;
 
 public class AdvancementsCommand {
-	private static final SuggestionProvider<CommandSourceStack> SUGGEST_ADVANCEMENTS = (ctx, suggestionsBuilder) -> SharedSuggestionProvider.suggestResource(getPlayerAdvancements(ctx, GameProfileArgument.getGameProfiles(ctx, "player")).advancements.entrySet().stream().filter(adv -> adv.getValue().getPercent() > 0 && adv.getKey().getRewards().getRecipes().length == 0).map(adv -> adv.getKey().getId()), suggestionsBuilder);
-	private static final SuggestionProvider<CommandSourceStack> SUGGEST_RECIPES = (ctx, suggestionsBuilder) -> SharedSuggestionProvider.suggestResource(getPlayerAdvancements(ctx, GameProfileArgument.getGameProfiles(ctx, "player")).advancements.entrySet().stream().filter(adv -> adv.getValue().getPercent() > 0 && adv.getKey().getRewards().getRecipes().length > 0).map(adv -> adv.getKey().getId()), suggestionsBuilder);
+	private static final SuggestionProvider<CommandSourceStack> SUGGEST_ADVANCEMENTS = (ctx, suggestionsBuilder) -> SharedSuggestionProvider.suggestResource(getPlayerAdvancements(ctx, GameProfileArgument.getGameProfiles(ctx, "player")).advancements.entrySet().stream().filter(adv -> adv.getValue().hasProgress() && adv.getKey().getRewards().getRecipes().length == 0).map(adv -> adv.getKey().getId()), suggestionsBuilder);
+	private static final SuggestionProvider<CommandSourceStack> SUGGEST_RECIPES = (ctx, suggestionsBuilder) -> SharedSuggestionProvider.suggestResource(getPlayerAdvancements(ctx, GameProfileArgument.getGameProfiles(ctx, "player")).advancements.entrySet().stream().filter(adv -> adv.getValue().hasProgress() && adv.getKey().getRewards().getRecipes().length > 0).map(adv -> adv.getKey().getId()), suggestionsBuilder);
 
 	public static ArgumentBuilder<CommandSourceStack, ?> register() {
 		return Commands.literal("advancements")
@@ -52,17 +52,18 @@ public class AdvancementsCommand {
 		GameProfile profile = ensureOneTarget(profiles);
 		FakePlayer fakePlayer = new FakePlayer(ctx.getSource().getServer().overworld(), profile);
 		PlayerAdvancements playerAdvancements = ctx.getSource().getServer().getPlayerList().getPlayerAdvancements(fakePlayer);
+		String advancementReference = recipe ? "recipe advancement" : "advancement";
 
 		if (advancement == null) {
 			Stream<Pair<Advancement, Integer>> allAdvancements = playerAdvancements.advancements.entrySet().stream().map(e -> Pair.of(e.getKey(), (int)(e.getValue().getPercent() * 100))).filter(p -> p.getRight() > 0);
 			List<Pair<Advancement, Integer>> filteredAdvancements = allAdvancements.filter(p -> recipe ? p.getKey().getRewards().getRecipes().length > 0 : p.getKey().getRewards().getRecipes().length == 0).toList();
 
 			if (filteredAdvancements.isEmpty()) {
-				ctx.getSource().sendFailure(new TranslatableComponent("No completed %1$sadvancements of player %2$s were found", recipe ? "recipe " : "", profile.getName()));
+				ctx.getSource().sendFailure(new TranslatableComponent("No completed %1$ss of player %2$s were found", advancementReference, profile.getName()));
 				return 0;
 			}
 
-			ctx.getSource().sendSuccess(new TranslatableComponent("Sending all completed %1$sadvancements of player %2$s (%3$s): %4$s", recipe ? "recipe " : "", profile.getName(), filteredAdvancements.size(), ComponentUtils.formatList(filteredAdvancements, p -> p.getKey().getChatComponent().copy().append(new TranslatableComponent(" (%s%%)", p.getRight()).withStyle(ChatFormatting.GRAY)))), false);
+			ctx.getSource().sendSuccess(new TranslatableComponent("Sending all completed %1$ss of player %2$s (%3$s): %4$s", advancementReference, profile.getName(), filteredAdvancements.size(), ComponentUtils.formatList(filteredAdvancements, p -> p.getKey().getChatComponent().copy().append(new TranslatableComponent(" (%s%%)", p.getRight()).withStyle(ChatFormatting.GRAY)))), false);
 			return filteredAdvancements.size();
 		}
 
@@ -70,7 +71,7 @@ public class AdvancementsCommand {
 		int progress = (int)(advancementProgress.getPercent() * 100);
 
 		if (progress == 0) {
-			ctx.getSource().sendFailure(new TranslatableComponent("No progress on %1$sadvancement %2$s of player %3$s found", recipe ? "recipe " : "", advancement.getChatComponent(), profile.getName()));
+			ctx.getSource().sendFailure(new TranslatableComponent("No progress on %1$s %2$s of player %3$s found", advancementReference, advancement.getChatComponent(), profile.getName()));
 			return 0;
 		}
 
@@ -78,7 +79,7 @@ public class AdvancementsCommand {
 
 		advancementProgress.getRemainingCriteria().forEach(s -> criteria.put(s, advancementProgress.getCriterion(s)));
 		advancementProgress.getCompletedCriteria().forEach(s -> criteria.put(s, advancementProgress.getCriterion(s)));
-		ctx.getSource().sendSuccess(new TranslatableComponent("Sending %1$sadvancement %2$s of player %3$s: %4$s%% complete, criteria: %5$s", recipe ? "recipe " : "", advancement.getChatComponent(), profile.getName(), progress, ComponentUtils.formatList(criteria.keySet(), n -> new TextComponent(n).withStyle(s -> s.applyFormat(criteria.get(n).isDone() ? ChatFormatting.GREEN : ChatFormatting.DARK_RED).withHoverEvent(new HoverEvent(Action.SHOW_TEXT, new TextComponent("Obtained: " + (criteria.get(n).isDone() ? criteria.get(n).getObtained() : "Never"))))))), false);
+		ctx.getSource().sendSuccess(new TranslatableComponent("Sending %1$s %2$s of player %3$s: %4$s%% complete, criteria: %5$s", advancementReference, advancement.getChatComponent(), profile.getName(), progress, ComponentUtils.formatList(criteria.keySet(), n -> new TextComponent(n).withStyle(s -> s.applyFormat(criteria.get(n).isDone() ? ChatFormatting.GREEN : ChatFormatting.DARK_RED).withHoverEvent(new HoverEvent(Action.SHOW_TEXT, new TextComponent("Obtained: " + (criteria.get(n).isDone() ? criteria.get(n).getObtained() : "Never"))))))), false);
 		return progress;
 	}
 
@@ -113,6 +114,7 @@ public class AdvancementsCommand {
 		GameProfile profile = ensureOneTarget(profiles);
 		MinecraftServer server = ctx.getSource().getServer();
 		FakePlayer fakePlayer = new FakePlayer(server.overworld(), profile);
+
 		return server.getPlayerList().getPlayerAdvancements(fakePlayer);
 	}
 }
