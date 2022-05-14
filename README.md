@@ -1,7 +1,10 @@
 [![](http://cf.way2muchnoise.eu/full_serverdataaccessor_downloads.svg)](https://www.curseforge.com/minecraft/mc-mods/serverdataaccessor) [![](http://cf.way2muchnoise.eu/versions/For%20MC_serverdataaccessor_all.svg)](https://www.curseforge.com/minecraft/mc-mods/serverdataaccessor/files)
 
-A server utility mod that gives admins ingame insight into the server's data.
-### Usage
+# ServerDataAccessor
+Source code for the mod "ServerDataAccessor".
+
+This Forge mod allows server admins to get ingame access to the server's data. Accessing the data is done via two commands and their respective sub-commands, which are described below. The op permission level required for executing these commands is configurable within the mod's serverconfig file.
+### Command Usage
 This mod adds two commands that are usable by server admins. The former one is for managing the server data, the latter one's purpose is managing the world data (and can thus also be used in singleplayer). Both commands have subcommands with which specific data can be retrieved.
 
 */serverdata [subcommand]*:
@@ -17,8 +20,8 @@ This mod adds two commands that are usable by server admins. The former one is f
 - *statistics* allows you to read and compare either all or single statistics of specific or all players
 - *worlddata* allows you to read the data of the world instance
 
-Accessing the server or world data might be useful for server admins that don't have direct file access to the server's files, and additionally, accessing the data via this mod is also a bit more user-friendly than through a file explorer.
+Accessing the server or world data from ingame commands might be useful for server admins that don't have direct file access to the server's files, and additionally, accessing the data via this mod is also a bit more user-friendly than through a file explorer.
 
 This mod does not add support for all types of server or world data, for example managing datapacks or configuration files, since there are either already commands or similar means in Vanilla or Forge that handle this data well enough, or the data is for internal use only and thus irrelevant for server admins.
 
-Finally, this mod is serverside only.
+Finally, this mod is serverside only. Clientside support may be added in the future (in form of reading log files, crash reports etc. in a custom screen) if there is demand.
