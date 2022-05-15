@@ -4,11 +4,9 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.suggestion.SuggestionProvider;
 
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
-import net.minecraft.command.ISuggestionProvider;
 import net.minecraft.command.arguments.NBTPathArgument;
 import net.minecraft.command.arguments.NBTPathArgument.NBTPath;
 import net.minecraft.nbt.CompoundNBT;
@@ -19,12 +17,9 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.storage.IServerConfiguration;
 import net.minecraftforge.fml.WorldPersistenceHooks;
-import net.minecraftforge.registries.RegistryManager;
 import redstonedubstep.mods.serverdataaccessor.util.TagFormatUtil;
 
 public class WorldDataCommand {
-	private static final SuggestionProvider<CommandSource> SUGGEST_REGISTRY = (ctx, suggestionsBuilder) -> ISuggestionProvider.suggestResource(RegistryManager.ACTIVE.takeSnapshot(true).keySet().stream(), suggestionsBuilder);
-
 	public static ArgumentBuilder<CommandSource, ?> register() {
 		return Commands.literal("worlddata")
 				.then(Commands.literal("fml")
