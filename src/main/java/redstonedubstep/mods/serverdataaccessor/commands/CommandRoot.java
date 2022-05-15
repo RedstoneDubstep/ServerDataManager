@@ -13,6 +13,7 @@ import redstonedubstep.mods.serverdataaccessor.commands.world.DimensionDataComma
 import redstonedubstep.mods.serverdataaccessor.commands.world.PlayerDataCommand;
 import redstonedubstep.mods.serverdataaccessor.commands.world.RegionFileCommand;
 import redstonedubstep.mods.serverdataaccessor.commands.world.StatisticsCommand;
+import redstonedubstep.mods.serverdataaccessor.commands.world.StructuresCommand;
 import redstonedubstep.mods.serverdataaccessor.commands.world.WorldDataCommand;
 
 public class CommandRoot {
@@ -30,6 +31,7 @@ public class CommandRoot {
 				.then(PlayerDataCommand.register())
 				.then(RegionFileCommand.register())
 				.then(StatisticsCommand.register())
+				.then(StructuresCommand.register())
 				.then(WorldDataCommand.register()));
 	}
 }
