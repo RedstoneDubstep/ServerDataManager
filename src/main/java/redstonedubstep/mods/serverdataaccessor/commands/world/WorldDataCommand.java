@@ -53,13 +53,10 @@ public class WorldDataCommand {
 			TagFormatUtil.removeNestedCollectionTags(compoundTag);
 
 		TagFormatUtil.splitTagToPage(foundTag, currentPage, 50);
+		ctx.getSource().sendSuccess(new TranslatableComponent("Sending vanilla world data at path \"%1$s\" (%2$s total entries): %3$s", new TextComponent(path != null ? path.toString() : "").withStyle(ChatFormatting.AQUA), totalTagEntries, NbtUtils.toPrettyComponent(foundTag)), false);
 
-		int pageTagEntries = TagFormatUtil.getTagSize(foundTag);
-
-		ctx.getSource().sendSuccess(new TranslatableComponent("Sending vanilla world data at path \"%1$s\"" + (totalTagEntries == -1 ? "" : " (%2$s total entries)") + ": %3$s", new TextComponent(path != null ? path.toString() : "").withStyle(ChatFormatting.AQUA), totalTagEntries, NbtUtils.toPrettyComponent(foundTag)), false);
-
-		if (pageTagEntries >= 0 && totalPages > 1)
-			ctx.getSource().sendSuccess(new TranslatableComponent("Displaying page %1$s out of %2$s with %3$s entries", currentPage + 1, totalPages, pageTagEntries), false);
+		if (totalPages > 1)
+			ctx.getSource().sendSuccess(new TranslatableComponent("Displaying page %1$s out of %2$s with %3$s entries", currentPage + 1, totalPages, TagFormatUtil.getTagSize(foundTag)), false);
 
 		return totalTagEntries;
 	}
@@ -86,7 +83,7 @@ public class WorldDataCommand {
 		}
 
 		if (foundTag == null || !success) {
-			ctx.getSource().sendFailure(new TranslatableComponent("FML Data with path %s could not be found", path));
+			ctx.getSource().sendFailure(new TranslatableComponent("FML world data does not contain any tags at given path"));
 			return 0;
 		}
 
@@ -94,19 +91,21 @@ public class WorldDataCommand {
 		int totalPages = (int)Math.ceil(totalTagEntries / 50D);
 		int currentPage = page > totalPages ? totalPages - 1 : page - 1;
 
+		if (totalTagEntries == 0) {
+			ctx.getSource().sendFailure(new TextComponent("FML world data does not contain any tags at given path"));
+			return 0;
+		}
+
 		if (foundTag instanceof CompoundTag compoundTag)
 			TagFormatUtil.removeNestedCollectionTags(compoundTag);
 		else if (foundTag instanceof ListTag listTag && path.endsWith(".ids")) //When the id tag gets referenced directly, only show the resource keys as string tags to truncate all the {} and resource ids, since these are not worth showing
 			foundTag = TagFormatUtil.formatResourceEntriesToKeys(listTag);
 
 		TagFormatUtil.splitTagToPage(foundTag, currentPage, 50);
-
-		int pageTagEntries = TagFormatUtil.getTagSize(foundTag);
-
 		ctx.getSource().sendSuccess(new TranslatableComponent("Sending FML world data at path \"%1$s\" (%2$s total entries)" + (totalTagEntries == -1 ? "" : " (%2$s total entries)") + ": %3$s", new TextComponent(path).withStyle(ChatFormatting.AQUA), totalTagEntries, NbtUtils.toPrettyComponent(foundTag)), false);
 
-		if (pageTagEntries >= 0 && totalPages > 1)
-			ctx.getSource().sendSuccess(new TranslatableComponent("Displaying page %1$s out of %2$s with %3$s entries", currentPage + 1, totalPages, pageTagEntries), false);
+		if (totalPages > 1)
+			ctx.getSource().sendSuccess(new TranslatableComponent("Displaying page %1$s out of %2$s with %3$s entries", currentPage + 1, totalPages, TagFormatUtil.getTagSize(foundTag)), false);
 
 		return totalTagEntries;
 	}

@@ -84,6 +84,6 @@ public class TagFormatUtil {
 		else if (tag instanceof CompoundTag compoundTag)
 			return compoundTag.size();
 
-		return -1;
+		return 1;
 	}
 }

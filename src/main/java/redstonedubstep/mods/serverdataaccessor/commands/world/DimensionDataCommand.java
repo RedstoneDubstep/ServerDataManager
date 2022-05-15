@@ -64,13 +64,10 @@ public class DimensionDataCommand {
 			TagFormatUtil.removeNestedCollectionTags(compoundTag);
 
 		TagFormatUtil.splitTagToPage(foundTag, currentPage, 50);
+		ctx.getSource().sendSuccess(new TranslatableComponent("Sending data with name \"%1$s\" at path \"%2$s\" of dimension \"%3$s\" (%4$s total entries): %5$s", new TextComponent(filename).withStyle(ChatFormatting.GRAY), new TextComponent(path != null ? path.toString() : "").withStyle(ChatFormatting.AQUA), levelName, totalTagEntries, NbtUtils.toPrettyComponent(foundTag)), false);
 
-		int pageTagEntries = TagFormatUtil.getTagSize(foundTag);
-
-		ctx.getSource().sendSuccess(new TranslatableComponent("Sending data with name \"%1$s\" at path \"%2$s\" of dimension \"%3$s\" " + (pageTagEntries == -1 ? "" : "(%4$s total entries)") + ": %5$s", new TextComponent(filename).withStyle(ChatFormatting.GRAY), new TextComponent(path != null ? path.toString() : "").withStyle(ChatFormatting.AQUA), levelName, totalTagEntries, NbtUtils.toPrettyComponent(foundTag)), false);
-
-		if (pageTagEntries >= 0 && totalPages > 1)
-			ctx.getSource().sendSuccess(new TranslatableComponent("Displaying page %1$s out of %2$s with %3$s entries", currentPage + 1, totalPages, pageTagEntries), false);
+		if (totalPages > 1)
+			ctx.getSource().sendSuccess(new TranslatableComponent("Displaying page %1$s out of %2$s with %3$s entries", currentPage + 1, totalPages, TagFormatUtil.getTagSize(foundTag)), false);
 
 		return totalTagEntries;
 	}
