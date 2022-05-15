@@ -72,6 +72,6 @@ public class DimensionDataCommand {
 		if (pageTagEntries >= 0 && totalPages > 1)
 			ctx.getSource().sendSuccess(new TranslatableComponent("Displaying page %1$s out of %2$s with %3$s entries", currentPage + 1, totalPages, pageTagEntries), false);
 
-		return pageTagEntries;
+		return totalTagEntries;
 	}
 }

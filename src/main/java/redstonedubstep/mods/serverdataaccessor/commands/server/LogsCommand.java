@@ -103,7 +103,7 @@ public class LogsCommand {
 				ctx.getSource().sendSuccess(new TranslatableComponent("Displaying page %1$s out of %2$s with %3$s lines", currentPage + 1, totalPages, splitLogLines.size()), false);
 		}
 
-		return logLines.size();
+		return totalLines;
 	}
 
 	private static int countLogFiles(CommandContext<CommandSourceStack> ctx) {
