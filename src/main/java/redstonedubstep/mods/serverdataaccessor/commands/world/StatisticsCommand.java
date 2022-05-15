@@ -21,7 +21,6 @@ import com.mojang.brigadier.suggestion.SuggestionProvider;
 
 import it.unimi.dsi.fastutil.objects.Object2IntMap.Entry;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.resources.language.I18n;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
@@ -103,7 +102,7 @@ public class StatisticsCommand {
 		int totalPages = (int)Math.ceil(statMap.size() / 50D);
 		int currentPage = page > totalPages ? totalPages - 1 : page - 1;
 
-		List<Pair<Stat<?>, Integer>> statsOnPage = FormatUtil.splitToPage(statMap.entrySet().stream().map(Pair::of).toList(), currentPage, 50).stream().sorted(Comparator.comparing(p -> I18n.get(StatUtil.getStatTranslationKey(p.getLeft())))).toList();
+		List<Pair<Stat<?>, Integer>> statsOnPage = FormatUtil.splitToPage(statMap.entrySet().stream().map(Pair::of).toList(), currentPage, 50).stream().sorted(Comparator.comparing(p -> new TranslatableComponent(StatUtil.getStatTranslationKey(p.getLeft())).getString())).toList();
 
 		Component statList = ComponentUtils.formatList(statsOnPage, p -> new TranslatableComponent(StatUtil.getStatTranslationKey(p.getKey())).withStyle(ChatFormatting.GRAY).withStyle(s -> s.withHoverEvent(new HoverEvent(Action.SHOW_TEXT, new TextComponent(p.getKey().getName())))).append(": ").append(new TextComponent(p.getKey().format(p.getValue())).withStyle(ChatFormatting.AQUA)));
 
