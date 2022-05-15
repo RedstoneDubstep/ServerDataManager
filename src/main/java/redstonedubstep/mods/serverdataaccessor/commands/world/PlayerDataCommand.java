@@ -36,12 +36,12 @@ public class PlayerDataCommand {
 		return Commands.literal("playerdata")
 				.then(Commands.literal("count").executes(PlayerDataCommand::countPlayerDataFiles))
 				.then(Commands.literal("get")
-						.then(Commands.argument("name", StringArgumentType.word()).suggests(SUGGEST_PLAYER_DATA_FILES).executes(ctx -> sendPlayerData(ctx, StringArgumentType.getString(ctx, "name"), null, 1))
-								.then(Commands.argument("page", IntegerArgumentType.integer(1)).executes(ctx -> sendPlayerData(ctx, StringArgumentType.getString(ctx, "name"), null, IntegerArgumentType.getInteger(ctx, "page")))
-										.then(Commands.argument("path", NbtPathArgument.nbtPath()).executes(ctx -> sendPlayerData(ctx, StringArgumentType.getString(ctx, "name"), NbtPathArgument.getPath(ctx, "path"), IntegerArgumentType.getInteger(ctx, "page")))))));
+						.then(Commands.argument("name", StringArgumentType.word()).suggests(SUGGEST_PLAYER_DATA_FILES).executes(ctx -> sendPlayerData(ctx, StringArgumentType.getString(ctx, "name"), 1, null))
+								.then(Commands.argument("page", IntegerArgumentType.integer(1)).executes(ctx -> sendPlayerData(ctx, StringArgumentType.getString(ctx, "name"), IntegerArgumentType.getInteger(ctx, "page"), null))
+										.then(Commands.argument("path", NbtPathArgument.nbtPath()).executes(ctx -> sendPlayerData(ctx, StringArgumentType.getString(ctx, "name"), IntegerArgumentType.getInteger(ctx, "page"), NbtPathArgument.getPath(ctx, "path")))))));
 	}
 
-	private static int sendPlayerData(CommandContext<CommandSourceStack> ctx, String name, NbtPath path, int page) throws CommandSyntaxException {
+	private static int sendPlayerData(CommandContext<CommandSourceStack> ctx, String name, int page, NbtPath path) throws CommandSyntaxException {
 		File[] playerDataFiles = ctx.getSource().getServer().getWorldPath(LevelResource.PLAYER_DATA_DIR).toFile().listFiles();
 
 		if (playerDataFiles == null || playerDataFiles.length == 0) {

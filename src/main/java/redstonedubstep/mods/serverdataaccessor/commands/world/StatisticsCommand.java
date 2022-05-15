@@ -51,13 +51,13 @@ public class StatisticsCommand {
 		return Commands.literal("statistics")
 				.then(Commands.literal("players")
 						.then(Commands.argument("players", GameProfileArgument.gameProfile())
-								.then(Commands.argument("type", ResourceKeyArgument.key(Registry.STAT_TYPE_REGISTRY)).executes(ctx -> getStatFrom(ctx, GameProfileArgument.getGameProfiles(ctx, "players"), StatUtil.getStatType(ctx, "type"), null, 1))
-										.then(Commands.argument("page", IntegerArgumentType.integer(1)).executes(ctx -> getStatFrom(ctx, GameProfileArgument.getGameProfiles(ctx, "players"), StatUtil.getStatType(ctx, "type"), null, IntegerArgumentType.getInteger(ctx, "page")))
-												.then(Commands.argument("id", ResourceLocationArgument.id()).suggests(SUGGEST_STATS).executes(ctx -> getStatFrom(ctx, GameProfileArgument.getGameProfiles(ctx, "players"), StatUtil.getStatType(ctx, "type"), ResourceLocationArgument.getId(ctx, "id"), IntegerArgumentType.getInteger(ctx, "page"))))))))
+								.then(Commands.argument("type", ResourceKeyArgument.key(Registry.STAT_TYPE_REGISTRY)).executes(ctx -> getStatFrom(ctx, GameProfileArgument.getGameProfiles(ctx, "players"), StatUtil.getStatType(ctx, "type"), 1, null))
+										.then(Commands.argument("page", IntegerArgumentType.integer(1)).executes(ctx -> getStatFrom(ctx, GameProfileArgument.getGameProfiles(ctx, "players"), StatUtil.getStatType(ctx, "type"), IntegerArgumentType.getInteger(ctx, "page"), null))
+												.then(Commands.argument("id", ResourceLocationArgument.id()).suggests(SUGGEST_STATS).executes(ctx -> getStatFrom(ctx, GameProfileArgument.getGameProfiles(ctx, "players"), StatUtil.getStatType(ctx, "type"), IntegerArgumentType.getInteger(ctx, "page"), ResourceLocationArgument.getId(ctx, "id"))))))))
 				.then(Commands.literal("global")
-						.then(Commands.argument("type", ResourceKeyArgument.key(Registry.STAT_TYPE_REGISTRY)).executes(ctx -> getStatFrom(ctx, null, StatUtil.getStatType(ctx, "type"), null, 1))
-								.then(Commands.argument("page", IntegerArgumentType.integer(1)).executes(ctx -> getStatFrom(ctx, null, StatUtil.getStatType(ctx, "type"), null, IntegerArgumentType.getInteger(ctx, "page")))
-										.then(Commands.argument("id", ResourceLocationArgument.id()).suggests(SUGGEST_STATS).executes(ctx -> getStatFrom(ctx, null, StatUtil.getStatType(ctx, "type"), ResourceLocationArgument.getId(ctx, "id"), IntegerArgumentType.getInteger(ctx, "page")))))))
+						.then(Commands.argument("type", ResourceKeyArgument.key(Registry.STAT_TYPE_REGISTRY)).executes(ctx -> getStatFrom(ctx, null, StatUtil.getStatType(ctx, "type"), 1, null))
+								.then(Commands.argument("page", IntegerArgumentType.integer(1)).executes(ctx -> getStatFrom(ctx, null, StatUtil.getStatType(ctx, "type"), IntegerArgumentType.getInteger(ctx, "page"), null))
+										.then(Commands.argument("id", ResourceLocationArgument.id()).suggests(SUGGEST_STATS).executes(ctx -> getStatFrom(ctx, null, StatUtil.getStatType(ctx, "type"), IntegerArgumentType.getInteger(ctx, "page"), ResourceLocationArgument.getId(ctx, "id")))))))
 				.then(Commands.literal("compare")
 						.then(Commands.literal("max")
 								.then(Commands.literal("players")
@@ -77,7 +77,7 @@ public class StatisticsCommand {
 												.then(Commands.argument("id", ResourceLocationArgument.id()).suggests(SUGGEST_STATS).executes(ctx -> getSpecificStat(ctx, false, null, StatUtil.getStatType(ctx, "type"), ResourceLocationArgument.getId(ctx, "id"))))))));
 	}
 
-	private static int getStatFrom(CommandContext<CommandSourceStack> ctx, Collection<GameProfile> profiles, StatType<?> statType, ResourceLocation statId, int page) throws CommandSyntaxException {
+	private static int getStatFrom(CommandContext<CommandSourceStack> ctx, Collection<GameProfile> profiles, StatType<?> statType, int page, ResourceLocation statId) throws CommandSyntaxException {
 		File statsFolder = ctx.getSource().getServer().getWorldPath(LevelResource.PLAYER_STATS_DIR).toFile();
 		Collection<?> statSource = profiles != null ? profiles : FormatUtil.safeArrayStream(statsFolder.listFiles()).toList();
 		StatsCounter statsCollection = StatUtil.mergeStats(statSource, statType, Optional.ofNullable(statId), ctx.getSource().getServer());
