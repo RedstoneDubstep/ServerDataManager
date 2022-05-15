@@ -77,7 +77,7 @@ public class AdvancementsCommand {
 
 			filteredAdvancements = FormatUtil.splitToPage(filteredAdvancements, currentPage, 20);
 
-			ctx.getSource().sendSuccess(new TranslationTextComponent("Sending all %1$ss of player %2$s (%3$s): %4$s", advancementReference, profile.getName(), totalEntries, TextComponentUtils.formatList(filteredAdvancements, p -> advancementFormatter.apply(p.getLeft()).append(new TranslationTextComponent(" (%s%%)", p.getRight().getPercent() * 100).withStyle(TextFormatting.GRAY)))), false);
+			ctx.getSource().sendSuccess(new TranslationTextComponent("Sending all %1$ss of player %2$s (%3$s): %4$s", advancementReference, profile.getName(), totalEntries, TextComponentUtils.formatList(filteredAdvancements, p -> advancementFormatter.apply(p.getLeft()).append(new TranslationTextComponent(" (%s%%)", getAdvancementPercent(p.getRight()) * 100).withStyle(TextFormatting.GRAY)))), false);
 
 			if (filteredAdvancements.size() > 0 && totalPages > 1)
 				ctx.getSource().sendSuccess(new TranslationTextComponent("Displaying page %1$s out of %2$s with %3$s entries", currentPage + 1, totalPages, filteredAdvancements.size()), false);
@@ -86,7 +86,7 @@ public class AdvancementsCommand {
 		}
 
 		AdvancementProgress advancementProgress = playerAdvancements.advancements.get(advancement);
-		float progress = advancementProgress.getPercent() * 100;
+		float progress = getAdvancementPercent(advancementProgress) * 100;
 
 		if (progress == 0) {
 			ctx.getSource().sendFailure(new TranslationTextComponent("No progress on %1$s %2$s of player %3$s found", advancementReference, advancementFormatter.apply(advancement), profile.getName()));
