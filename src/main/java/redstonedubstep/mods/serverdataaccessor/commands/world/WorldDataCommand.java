@@ -102,7 +102,7 @@ public class WorldDataCommand {
 			foundTag = TagFormatUtil.formatResourceEntriesToKeys(listTag);
 
 		TagFormatUtil.splitTagToPage(foundTag, currentPage, 50);
-		ctx.getSource().sendSuccess(new TranslatableComponent("Sending FML world data at path \"%1$s\" (%2$s total entries)" + (totalTagEntries == -1 ? "" : " (%2$s total entries)") + ": %3$s", new TextComponent(path).withStyle(ChatFormatting.AQUA), totalTagEntries, NbtUtils.toPrettyComponent(foundTag)), false);
+		ctx.getSource().sendSuccess(new TranslatableComponent("Sending FML world data at path \"%1$s\" (%2$s total entries): %3$s", new TextComponent(path).withStyle(ChatFormatting.AQUA), totalTagEntries, NbtUtils.toPrettyComponent(foundTag)), false);
 
 		if (totalPages > 1)
 			ctx.getSource().sendSuccess(new TranslatableComponent("Displaying page %1$s out of %2$s with %3$s entries", currentPage + 1, totalPages, TagFormatUtil.getTagSize(foundTag)), false);
