@@ -98,13 +98,10 @@ public class PlayerDataCommand {
 			TagFormatUtil.removeNestedCollectionTags(((CompoundNBT)foundTag));
 
 		TagFormatUtil.splitTagToPage(foundTag, currentPage, 50);
+		ctx.getSource().sendSuccess(new TranslationTextComponent("Sending playerdata of player with UUID \"%1$s\" at path \"%2$s\" (%3$s total entries): %4$s", new StringTextComponent(fileName).withStyle(TextFormatting.AQUA), new StringTextComponent(path != null ? path.toString() : "").withStyle(TextFormatting.AQUA), totalTagEntries, foundTag.getPrettyDisplay()), false);
 
-		int pageTagEntries = TagFormatUtil.getTagSize(foundTag);
-
-		ctx.getSource().sendSuccess(new TranslationTextComponent("Sending playerdata of player with UUID \"%1$s\" at path \"%2$s\"" + (pageTagEntries == -1 ? "" : " (%3$s total entries)") + ": %4$s", new StringTextComponent(fileName).withStyle(TextFormatting.AQUA), new StringTextComponent(path != null ? path.toString() : "").withStyle(TextFormatting.AQUA), totalTagEntries, foundTag.getPrettyDisplay()), false);
-
-		if (pageTagEntries >= 0 && totalPages > 1)
-			ctx.getSource().sendSuccess(new TranslationTextComponent("Displaying page %1$s out of %2$s with %3$s entries", currentPage + 1, totalPages, pageTagEntries), false);
+		if (totalPages > 1)
+			ctx.getSource().sendSuccess(new TranslationTextComponent("Displaying page %1$s out of %2$s with %3$s entries", currentPage + 1, totalPages, TagFormatUtil.getTagSize(foundTag)), false);
 
 		return totalTagEntries;
 	}

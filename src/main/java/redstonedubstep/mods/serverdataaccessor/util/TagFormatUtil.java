@@ -86,6 +86,6 @@ public class TagFormatUtil {
 		else if (tag instanceof CompoundNBT)
 			return ((CompoundNBT)tag).size();
 
-		return -1;
+		return 1;
 	}
 }
