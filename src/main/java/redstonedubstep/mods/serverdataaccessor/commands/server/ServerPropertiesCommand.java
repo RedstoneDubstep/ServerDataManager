@@ -1,6 +1,10 @@
 package redstonedubstep.mods.serverdataaccessor.commands.server;
 
+import java.util.Comparator;
+import java.util.List;
 import java.util.Properties;
+
+import org.apache.commons.lang3.tuple.Pair;
 
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
@@ -31,20 +35,18 @@ public class ServerPropertiesCommand {
 		Properties serverProperties = ((DedicatedServer)ctx.getSource().getServer()).getProperties().properties;
 
 		if (name.isEmpty()) {
-			Component propertiesText = ComponentUtils.formatList(serverProperties.entrySet(), e -> new TextComponent(e.getKey().toString()).withStyle(ChatFormatting.AQUA).append("=").append(new TextComponent(e.getValue().toString()).withStyle(ChatFormatting.GREEN)));
+			List<Pair<String, String>> sortedProperties = serverProperties.entrySet().stream().map(e -> Pair.of(e.getKey().toString(), e.getValue().toString())).sorted(Comparator.comparing(Pair::getLeft)).toList();
+			Component propertiesComponent = ComponentUtils.formatList(sortedProperties, p -> new TextComponent(p.getKey()).withStyle(ChatFormatting.AQUA).append("=").append(new TextComponent(p.getValue()).withStyle(ChatFormatting.GREEN)));
 
-			ctx.getSource().sendSuccess(new TranslatableComponent("The following %s properties were found: \n", serverProperties.entrySet().size()).append(propertiesText), false);
-			return serverProperties.entrySet().size();
+			ctx.getSource().sendSuccess(new TranslatableComponent("The following %s properties were found: \n", serverProperties.entrySet().size()).append(propertiesComponent), false);
+			return sortedProperties.size();
 		}
-		else {
-			if (serverProperties.containsKey(name)) {
-				ctx.getSource().sendSuccess(new TranslatableComponent("Property \"%1$s\" has the following value: %2$s", new TextComponent(name).withStyle(ChatFormatting.AQUA), new TextComponent(serverProperties.get(name).toString()).withStyle(ChatFormatting.GREEN)), false);
-				return 1;
-			}
-			else
-				ctx.getSource().sendFailure(new TranslatableComponent("Could not find property with name \"%s\"", name));
+		else if (!serverProperties.containsKey(name)) {
+			ctx.getSource().sendFailure(new TranslatableComponent("Could not find property with name \"%s\"", name));
+			return 0;
 		}
 
-		return 0;
+		ctx.getSource().sendSuccess(new TranslatableComponent("Property \"%1$s\" has the following value: %2$s", new TextComponent(name).withStyle(ChatFormatting.AQUA), new TextComponent(serverProperties.get(name).toString()).withStyle(ChatFormatting.GREEN)), false);
+		return 1;
 	}
 }

@@ -2,7 +2,8 @@ package redstonedubstep.mods.serverdataaccessor.commands.world;
 
 import java.io.File;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -20,6 +21,7 @@ import com.mojang.brigadier.suggestion.SuggestionProvider;
 
 import it.unimi.dsi.fastutil.objects.Object2IntMap.Entry;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.resources.language.I18n;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
@@ -101,10 +103,9 @@ public class StatisticsCommand {
 		int totalPages = (int)Math.ceil(statMap.size() / 50D);
 		int currentPage = page > totalPages ? totalPages - 1 : page - 1;
 
-		Map<Stat<?>, Integer> statsOnPage = new HashMap<>();
-		FormatUtil.splitToPage(statMap.keySet().stream().toList(), currentPage, 50).forEach(s -> statsOnPage.put(s, statMap.get(s)));
+		List<Pair<Stat<?>, Integer>> statsOnPage = FormatUtil.splitToPage(statMap.entrySet().stream().map(Pair::of).toList(), currentPage, 50).stream().sorted(Comparator.comparing(p -> I18n.get(StatUtil.getStatTranslationKey(p.getLeft())))).toList();
 
-		Component statList = ComponentUtils.formatList(statsOnPage.entrySet(), e -> new TranslatableComponent(StatUtil.getStatTranslationKey(e.getKey())).withStyle(ChatFormatting.GRAY).withStyle(s -> s.withHoverEvent(new HoverEvent(Action.SHOW_TEXT, new TextComponent(e.getKey().getName())))).append(": ").append(new TextComponent(e.getKey().format(e.getValue())).withStyle(ChatFormatting.AQUA)));
+		Component statList = ComponentUtils.formatList(statsOnPage, p -> new TranslatableComponent(StatUtil.getStatTranslationKey(p.getKey())).withStyle(ChatFormatting.GRAY).withStyle(s -> s.withHoverEvent(new HoverEvent(Action.SHOW_TEXT, new TextComponent(p.getKey().getName())))).append(": ").append(new TextComponent(p.getKey().format(p.getValue())).withStyle(ChatFormatting.AQUA)));
 
 		ctx.getSource().sendSuccess(new TranslatableComponent("Sending statistics of %1$s of type \"%2$s\" with %3$s entries: %4$s", playerReference, statTypeComponent, statsCollection.stats.size(), statList), false);
 
