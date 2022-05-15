@@ -1,6 +1,11 @@
 package redstonedubstep.mods.serverdataaccessor.commands.server;
 
+import java.util.Comparator;
+import java.util.List;
 import java.util.Properties;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.tuple.Pair;
 
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
@@ -31,20 +36,18 @@ public class ServerPropertiesCommand {
 		Properties serverProperties = ((DedicatedServer)ctx.getSource().getServer()).getProperties().properties;
 
 		if (name.isEmpty()) {
-			ITextComponent propertiesText = TextComponentUtils.formatList(serverProperties.entrySet(), e -> new StringTextComponent(e.getKey().toString()).withStyle(TextFormatting.AQUA).append("=").append(new StringTextComponent(e.getValue().toString()).withStyle(TextFormatting.GREEN)));
+			List<Pair<String, String>> sortedProperties = serverProperties.entrySet().stream().map(e -> Pair.of(e.getKey().toString(), e.getValue().toString())).sorted(Comparator.comparing(Pair::getLeft)).collect(Collectors.toList());
+			ITextComponent propertiesComponent = TextComponentUtils.formatList(sortedProperties, p -> new StringTextComponent(p.getKey()).withStyle(TextFormatting.AQUA).append("=").append(new StringTextComponent(p.getValue()).withStyle(TextFormatting.GREEN)));
 
-			ctx.getSource().sendSuccess(new TranslationTextComponent("The following %s properties were found: \n", serverProperties.entrySet().size()).append(propertiesText), false);
-			return serverProperties.entrySet().size();
+			ctx.getSource().sendSuccess(new TranslationTextComponent("The following %s properties were found: \n", serverProperties.entrySet().size()).append(propertiesComponent), false);
+			return sortedProperties.size();
 		}
-		else {
-			if (serverProperties.containsKey(name)) {
-				ctx.getSource().sendSuccess(new TranslationTextComponent("Property \"%1$s\" has the following value: %2$s", new StringTextComponent(name).withStyle(TextFormatting.AQUA), new StringTextComponent(serverProperties.get(name).toString()).withStyle(TextFormatting.GREEN)), false);
-				return 1;
-			}
-			else
-				ctx.getSource().sendFailure(new TranslationTextComponent("Could not find property with name \"%s\"", name));
+		else if (!serverProperties.containsKey(name)) {
+			ctx.getSource().sendFailure(new TranslationTextComponent("Could not find property with name \"%s\"", name));
+			return 0;
 		}
 
-		return 0;
+		ctx.getSource().sendSuccess(new TranslationTextComponent("Property \"%1$s\" has the following value: %2$s", new StringTextComponent(name).withStyle(TextFormatting.AQUA), new StringTextComponent(serverProperties.get(name).toString()).withStyle(TextFormatting.GREEN)), false);
+		return 1;
 	}
 }

@@ -1,9 +1,10 @@
 package redstonedubstep.mods.serverdataaccessor.commands.world;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -105,10 +106,10 @@ public class StatisticsCommand {
 		int totalPages = (int)Math.ceil(statMap.size() / 50D);
 		int currentPage = page > totalPages ? totalPages - 1 : page - 1;
 
-		Map<Stat<?>, Integer> statsOnPage = new HashMap<>();
-		FormatUtil.splitToPage(new ArrayList<>(statMap.keySet()), currentPage, 50).forEach(s -> statsOnPage.put(s, statMap.get(s)));
+		Map<Stat<?>, Integer> statsOnPage = new LinkedHashMap<>();
+		FormatUtil.splitToPage(statMap.entrySet().stream().map(e -> Pair.of(e.getKey(), e.getValue())).collect(Collectors.toList()), currentPage, 50).stream().sorted(Comparator.comparing(p -> new TranslationTextComponent(StatUtil.getStatTranslationKey(p.getLeft())).getString())).forEach(p -> statsOnPage.put(p.getKey(), p.getValue()));
 
-		ITextComponent statList = TextComponentUtils.formatList(statsOnPage.entrySet(), e -> new TranslationTextComponent(StatUtil.getStatTranslationKey(e.getKey())).withStyle(TextFormatting.GRAY).withStyle(s -> s.withHoverEvent(new HoverEvent(Action.SHOW_TEXT, new StringTextComponent(e.getKey().getName())))).append(": ").append(new StringTextComponent(StatUtil.format(e.getKey(), e.getValue())).withStyle(TextFormatting.AQUA)));
+		ITextComponent statList = TextComponentUtils.formatList(statsOnPage.entrySet(), p -> new TranslationTextComponent(StatUtil.getStatTranslationKey(p.getKey())).withStyle(TextFormatting.GRAY).withStyle(s -> s.withHoverEvent(new HoverEvent(Action.SHOW_TEXT, new StringTextComponent(p.getKey().getName())))).append(": ").append(new StringTextComponent(StatUtil.format(p.getKey(), p.getValue())).withStyle(TextFormatting.AQUA)));
 
 		ctx.getSource().sendSuccess(new TranslationTextComponent("Sending statistics of %1$s of type \"%2$s\" with %3$s entries: %4$s", playerReference, statTypeComponent, statsCollection.stats.size(), statList), false);
 
