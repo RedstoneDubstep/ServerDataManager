@@ -82,7 +82,7 @@ public class AdvancementsCommand {
 			if (filteredAdvancements.size() > 0 && totalPages > 1)
 				ctx.getSource().sendSuccess(new TranslationTextComponent("Displaying page %1$s out of %2$s with %3$s entries", currentPage + 1, totalPages, filteredAdvancements.size()), false);
 
-			return filteredAdvancements.size();
+			return totalEntries;
 		}
 
 		AdvancementProgress advancementProgress = playerAdvancements.advancements.get(advancement);

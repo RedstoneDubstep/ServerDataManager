@@ -116,7 +116,7 @@ public class StatisticsCommand {
 		if (statsOnPage.size() > 0 && totalPages > 1)
 			ctx.getSource().sendSuccess(new TranslationTextComponent("Displaying page %1$s out of %2$s with %3$s entries", currentPage + 1, totalPages, statsOnPage.size()), false);
 
-		return statMap.size();
+		return statsCollection.stats.size();
 	}
 
 	private static int getSpecificStat(CommandContext<CommandSource> ctx, boolean max, Collection<GameProfile> profiles, StatType<?> statType, ResourceLocation statId) throws CommandSyntaxException {

@@ -60,7 +60,7 @@ public class WorldDataCommand {
 		if (pageTagEntries >= 0 && totalPages > 1)
 			ctx.getSource().sendSuccess(new TranslationTextComponent("Displaying page %1$s out of %2$s with %3$s entries", currentPage + 1, totalPages, pageTagEntries), false);
 
-		return 0;
+		return totalTagEntries;
 	}
 
 	private static int getFMLWorldData(CommandContext<CommandSource> ctx, int page, String path) {
@@ -107,6 +107,6 @@ public class WorldDataCommand {
 		if (pageTagEntries >= 0 && totalPages > 1)
 			ctx.getSource().sendSuccess(new TranslationTextComponent("Displaying page %1$s out of %2$s with %3$s entries", currentPage + 1, totalPages, pageTagEntries), false);
 
-		return pageTagEntries;
+		return totalTagEntries;
 	}
 }

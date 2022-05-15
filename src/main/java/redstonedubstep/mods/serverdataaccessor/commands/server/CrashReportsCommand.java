@@ -98,7 +98,7 @@ public class CrashReportsCommand {
 					ctx.getSource().sendSuccess(new TranslationTextComponent("Displaying page %1$s out of %2$s with %3$s lines", currentPage + 1, totalPages, crashReportLines.size()), false);
 			}
 
-			return crashReportLines.size();
+			return totalLines;
 		}
 
 		return 0;
