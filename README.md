@@ -5,14 +5,14 @@ Source code for the mod "ServerDataAccessor".
 
 This Forge mod allows server admins to get ingame access to the server's data. Accessing the data is done via two commands and their respective sub-commands, which are described below. The op permission level required for executing these commands is configurable within the mod's serverconfig file.
 ### Command Usage
-This mod adds two commands that are usable by server admins. The former one is for managing the server data, the latter one's purpose is managing the world data (and can thus also be used in singleplayer). Both commands have subcommands with which specific data can be retrieved.
+This mod adds two commands that are usable by server admins. The former one is for reading the server data, the latter one's purpose is accessing the world data (and can thus also be used in singleplayer). Both commands have subcommands with which specific data can be retrieved.
 
-*/serverdata [subcommand]*:
+*/serverdataaccess [subcommand]*:
 - *crash-reports* allows you to get access to the content of crash reports, either via sending them into the chat or copying the content to clipboard
 - *logs* allows you to get access to the content of log files, either via sending them into the chat or copying the content to clipboard
 - *properties* allows you to read the server's properties, with all the property keys and their respective values
 
-*/worlddata [subcommand]*:
+*/worlddataaccess [subcommand]*:
 - *advancements* allows you to count or read out the advancements of specific players
 - *dimensiondata* allows you to read the data of all registered dimensions, sorted by dimension type
 - *playerdata* allows you to read the data of specific players
