@@ -23,17 +23,17 @@ public class WorldDataCommand {
 	public static ArgumentBuilder<CommandSource, ?> register() {
 		return Commands.literal("worlddata")
 				.then(Commands.literal("fml")
-						.then(Commands.literal("loading-mod-list").executes(ctx -> getFMLWorldData(ctx, "LoadingModList", 1))
-								.then(Commands.argument("page", IntegerArgumentType.integer(1)).executes(ctx -> getFMLWorldData(ctx, "LoadingModList", IntegerArgumentType.getInteger(ctx, "page")))))
-						.then(Commands.literal("registries").executes(ctx -> getFMLWorldData(ctx, "Registries", 1))
-								.then(Commands.argument("page", IntegerArgumentType.integer(1)).executes(ctx -> getFMLWorldData(ctx, "Registries", IntegerArgumentType.getInteger(ctx, "page")))
-										.then(Commands.argument("path", NBTPathArgument.nbtPath()).executes(ctx -> getFMLWorldData(ctx, "Registries." + NBTPathArgument.getPath(ctx, "path"), IntegerArgumentType.getInteger(ctx, "page")))))))
-				.then(Commands.literal("vanilla").executes(ctx -> getVanillaWorldData(ctx, null, 1))
-						.then(Commands.argument("page", IntegerArgumentType.integer(1)).executes(ctx -> getVanillaWorldData(ctx, null, IntegerArgumentType.getInteger(ctx, "page")))
-								.then(Commands.argument("path", NBTPathArgument.nbtPath()).executes(ctx -> getVanillaWorldData(ctx, NBTPathArgument.getPath(ctx, "path"), IntegerArgumentType.getInteger(ctx, "page"))))));
+						.then(Commands.literal("loading-mod-list").executes(ctx -> getFMLWorldData(ctx, 1, "LoadingModList"))
+								.then(Commands.argument("page", IntegerArgumentType.integer(1)).executes(ctx -> getFMLWorldData(ctx, IntegerArgumentType.getInteger(ctx, "page"), "LoadingModList"))))
+						.then(Commands.literal("registries").executes(ctx -> getFMLWorldData(ctx, 1, "Registries"))
+								.then(Commands.argument("page", IntegerArgumentType.integer(1)).executes(ctx -> getFMLWorldData(ctx, IntegerArgumentType.getInteger(ctx, "page"), "Registries"))
+										.then(Commands.argument("path", NBTPathArgument.nbtPath()).executes(ctx -> getFMLWorldData(ctx, IntegerArgumentType.getInteger(ctx, "page"), "Registries." + NBTPathArgument.getPath(ctx, "path")))))))
+				.then(Commands.literal("vanilla").executes(ctx -> getVanillaWorldData(ctx, 1, null))
+						.then(Commands.argument("page", IntegerArgumentType.integer(1)).executes(ctx -> getVanillaWorldData(ctx, IntegerArgumentType.getInteger(ctx, "page"), null))
+								.then(Commands.argument("path", NBTPathArgument.nbtPath()).executes(ctx -> getVanillaWorldData(ctx, IntegerArgumentType.getInteger(ctx, "page"), NBTPathArgument.getPath(ctx, "path"))))));
 	}
 
-	private static int getVanillaWorldData(CommandContext<CommandSource> ctx, NBTPath path, int page) throws CommandSyntaxException {
+	private static int getVanillaWorldData(CommandContext<CommandSource> ctx, int page, NBTPath path) throws CommandSyntaxException {
 		IServerConfiguration data = ctx.getSource().getServer().getWorldData();
 		CompoundNBT worldTag = data.createTag(ctx.getSource().getServer().registryAccess(), null);
 
@@ -63,7 +63,7 @@ public class WorldDataCommand {
 		return 0;
 	}
 
-	private static int getFMLWorldData(CommandContext<CommandSource> ctx, String path, int page) {
+	private static int getFMLWorldData(CommandContext<CommandSource> ctx, int page, String path) {
 		IServerConfiguration data = ctx.getSource().getServer().getWorldData();
 		CompoundNBT fmlWorldData = new CompoundNBT();
 		String[] nodes = path.split("\\.");

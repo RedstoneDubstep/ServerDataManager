@@ -31,12 +31,12 @@ public class DimensionDataCommand {
 	public static ArgumentBuilder<CommandSource, ?> register() {
 		return Commands.literal("dimensiondata")
 				.then(Commands.argument("dimension", DimensionArgument.dimension())
-						.then(Commands.argument("file", StringArgumentType.word()).suggests(SUGGEST_LEVEL_DATA_FILES).executes(ctx -> getLevelData(ctx, DimensionArgument.getDimension(ctx, "dimension"), StringArgumentType.getString(ctx, "file"), null, 1))
-								.then(Commands.argument("page", IntegerArgumentType.integer(1)).executes(ctx -> getLevelData(ctx, DimensionArgument.getDimension(ctx, "dimension"), StringArgumentType.getString(ctx, "file"), null, IntegerArgumentType.getInteger(ctx, "page")))
-										.then(Commands.argument("path", NBTPathArgument.nbtPath()).executes(ctx -> getLevelData(ctx, DimensionArgument.getDimension(ctx, "dimension"), StringArgumentType.getString(ctx, "file"), NBTPathArgument.getPath(ctx, "path"), IntegerArgumentType.getInteger(ctx, "page")))))));
+						.then(Commands.argument("file", StringArgumentType.word()).suggests(SUGGEST_LEVEL_DATA_FILES).executes(ctx -> getLevelData(ctx, DimensionArgument.getDimension(ctx, "dimension"), StringArgumentType.getString(ctx, "file"), 1, null))
+								.then(Commands.argument("page", IntegerArgumentType.integer(1)).executes(ctx -> getLevelData(ctx, DimensionArgument.getDimension(ctx, "dimension"), StringArgumentType.getString(ctx, "file"), IntegerArgumentType.getInteger(ctx, "page"), null))
+										.then(Commands.argument("path", NBTPathArgument.nbtPath()).executes(ctx -> getLevelData(ctx, DimensionArgument.getDimension(ctx, "dimension"), StringArgumentType.getString(ctx, "file"), IntegerArgumentType.getInteger(ctx, "page"), NBTPathArgument.getPath(ctx, "path")))))));
 	}
 
-	private static int getLevelData(CommandContext<CommandSource> ctx, ServerWorld level, String filename, NBTPath path, int page) throws CommandSyntaxException {
+	private static int getLevelData(CommandContext<CommandSource> ctx, ServerWorld level, String filename, int page, NBTPath path) throws CommandSyntaxException {
 		DimensionSavedDataManager dataStorage = level.getDataStorage();
 		ResourceLocation levelName = ctx.getArgument("dimension", ResourceLocation.class);
 		CompoundNBT data;
