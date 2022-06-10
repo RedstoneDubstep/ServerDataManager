@@ -33,8 +33,6 @@ import net.minecraft.network.chat.ComponentUtils;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.HoverEvent.Action;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.stats.ServerStatsCounter;
@@ -84,47 +82,47 @@ public class StatisticsCommand {
 		StatsCounter statsCollection = StatUtil.mergeStats(statSource, statType, Optional.ofNullable(statId), ctx.getSource().getServer());
 		Pair<Stat<?>, Integer> stat = StatUtil.getStatFromCollection(statsCollection, statType, statId);
 		Map<Stat<?>, Integer> statMap = stat != null ? Map.of(stat.getLeft(), stat.getRight()) : statsCollection.stats;
-		TranslatableComponent playerReference = new TranslatableComponent(profiles == null ? "all %2$s players" : (profiles.size() == 1 ? "player %1$s" : "%2$s players"), Optional.ofNullable(profiles).map(p -> p.iterator().next().getName()).orElse(""), statSource.size());
-		MutableComponent statTypeComponent = new TranslatableComponent(StatUtil.getStatTypeTranslation(statType));
+		MutableComponent playerReference = Component.translatable(profiles == null ? "all %2$s players" : (profiles.size() == 1 ? "player %1$s" : "%2$s players"), Optional.ofNullable(profiles).map(p -> p.iterator().next().getName()).orElse(""), statSource.size());
+		MutableComponent statTypeComponent = Component.translatable(StatUtil.getStatTypeTranslation(statType));
 
 		if (statMap.isEmpty()) {
-			ctx.getSource().sendFailure(new TranslatableComponent("No statistics of %1$s of type \"%2$s\" were found", playerReference, statTypeComponent));
+			ctx.getSource().sendFailure(Component.translatable("No statistics of %1$s of type \"%2$s\" were found", playerReference, statTypeComponent));
 			return 0;
 		}
 
 		if (statMap.size() == 1 && stat != null) {
-			Component statComponent = new TranslatableComponent(StatUtil.getStatTranslationKey(stat.getKey())).withStyle(ChatFormatting.GRAY).withStyle(s -> s.withHoverEvent(new HoverEvent(Action.SHOW_TEXT, new TextComponent(stat.getKey().getName())))).append(": ").append(new TextComponent(stat.getKey().format(stat.getValue())).withStyle(ChatFormatting.AQUA));
+			Component statComponent = Component.translatable(StatUtil.getStatTranslationKey(stat.getKey())).withStyle(ChatFormatting.GRAY).withStyle(s -> s.withHoverEvent(new HoverEvent(Action.SHOW_TEXT, Component.literal(stat.getKey().getName())))).append(": ").append(Component.literal(stat.getKey().format(stat.getValue())).withStyle(ChatFormatting.AQUA));
 
-			ctx.getSource().sendSuccess(new TranslatableComponent("Sending statistic %1$s of %2$s of type \"%3$s\": %4$s", StatUtil.getStatTranslationKey(stat.getKey()), playerReference, statTypeComponent, statComponent), false);
+			ctx.getSource().sendSuccess(Component.translatable("Sending statistic %1$s of %2$s of type \"%3$s\": %4$s", StatUtil.getStatTranslationKey(stat.getKey()), playerReference, statTypeComponent, statComponent), false);
 			return stat.getValue();
 		}
 
 		int totalPages = (int)Math.ceil(statMap.size() / 50D);
 		int currentPage = page > totalPages ? totalPages - 1 : page - 1;
 
-		List<Pair<Stat<?>, Integer>> statsOnPage = FormatUtil.splitToPage(statMap.entrySet().stream().map(Pair::of).toList(), currentPage, 50).stream().sorted(Comparator.comparing(p -> new TranslatableComponent(StatUtil.getStatTranslationKey(p.getLeft())).getString())).toList();
+		List<Pair<Stat<?>, Integer>> statsOnPage = FormatUtil.splitToPage(statMap.entrySet().stream().map(Pair::of).toList(), currentPage, 50).stream().sorted(Comparator.comparing(p -> Component.translatable(StatUtil.getStatTranslationKey(p.getLeft())).getString())).toList();
 
-		Component statList = ComponentUtils.formatList(statsOnPage, p -> new TranslatableComponent(StatUtil.getStatTranslationKey(p.getKey())).withStyle(ChatFormatting.GRAY).withStyle(s -> s.withHoverEvent(new HoverEvent(Action.SHOW_TEXT, new TextComponent(p.getKey().getName())))).append(": ").append(new TextComponent(p.getKey().format(p.getValue())).withStyle(ChatFormatting.AQUA)));
+		Component statList = ComponentUtils.formatList(statsOnPage, p -> Component.translatable(StatUtil.getStatTranslationKey(p.getKey())).withStyle(ChatFormatting.GRAY).withStyle(s -> s.withHoverEvent(new HoverEvent(Action.SHOW_TEXT, Component.literal(p.getKey().getName())))).append(": ").append(Component.literal(p.getKey().format(p.getValue())).withStyle(ChatFormatting.AQUA)));
 
-		ctx.getSource().sendSuccess(new TranslatableComponent("Sending statistics of %1$s of type \"%2$s\" with %3$s entries: %4$s", playerReference, statTypeComponent, statsCollection.stats.size(), statList), false);
+		ctx.getSource().sendSuccess(Component.translatable("Sending statistics of %1$s of type \"%2$s\" with %3$s entries: %4$s", playerReference, statTypeComponent, statsCollection.stats.size(), statList), false);
 
 		if (statsOnPage.size() > 0 && totalPages > 1)
-			ctx.getSource().sendSuccess(new TranslatableComponent("Displaying page %1$s out of %2$s with %3$s entries", currentPage + 1, totalPages, statsOnPage.size()), false);
+			ctx.getSource().sendSuccess(Component.translatable("Displaying page %1$s out of %2$s with %3$s entries", currentPage + 1, totalPages, statsOnPage.size()), false);
 
 		return statsCollection.stats.size();
 	}
 
 	private static int getSpecificStat(CommandContext<CommandSourceStack> ctx, boolean max, Collection<GameProfile> profiles, StatType<?> statType, ResourceLocation statId) throws CommandSyntaxException {
 		if (profiles != null && profiles.size() == 1)
-			throw new SimpleCommandExceptionType(new TextComponent("Multiple players must be targeted for comparing!")).create();
+			throw new SimpleCommandExceptionType(Component.literal("Multiple players must be targeted for comparing!")).create();
 
 		MinecraftServer server = ctx.getSource().getServer();
 		File statsFolder = server.getWorldPath(LevelResource.PLAYER_STATS_DIR).toFile();
 		Collection<?> statSource = profiles != null ? profiles : FormatUtil.safeArrayStream(statsFolder.listFiles()).toList();
 		Stat<?> stat = null;
 		Pair<String, Integer> best = null;
-		TranslatableComponent playerReference = new TranslatableComponent(profiles == null ? "all %1$s players" : "%1$s players", statSource.size());
-		MutableComponent statTypeComponent = new TranslatableComponent(StatUtil.getStatTypeTranslation(statType));
+		MutableComponent playerReference = Component.translatable(profiles == null ? "all %1$s players" : "%1$s players", statSource.size());
+		MutableComponent statTypeComponent = Component.translatable(StatUtil.getStatTypeTranslation(statType));
 
 		//Compares each statsHolder's stats, picks the best (either the highest or lowest) value and stores it and the corresponding player's name to the variable
 		for (Object statsHolder : statSource) {
@@ -152,9 +150,9 @@ public class StatisticsCommand {
 
 		if (best == null) {
 			if (statId == null)
-				ctx.getSource().sendFailure(new TranslatableComponent("No statistics of %1$s of type \"%2$s\" were found", playerReference, statTypeComponent));
+				ctx.getSource().sendFailure(Component.translatable("No statistics of %1$s of type \"%2$s\" were found", playerReference, statTypeComponent));
 			else
-				ctx.getSource().sendFailure(new TranslatableComponent("Couldn't find statistic of %1$s with id \"%2$s\" of type \"%3$s\"", playerReference, statId, statTypeComponent));
+				ctx.getSource().sendFailure(Component.translatable("Couldn't find statistic of %1$s with id \"%2$s\" of type \"%3$s\"", playerReference, statId, statTypeComponent));
 
 			return 0;
 		}
@@ -162,9 +160,9 @@ public class StatisticsCommand {
 		String statName = stat == null ? "" : stat.getName();
 
 		if (statId == null)
-			ctx.getSource().sendSuccess(new TranslatableComponent("Player with the " + (max ? "highest" : "lowest") + " number of statistic entries (%1$s) of type \"%2$s\" out of %3$s is %4$s", best.getRight(), statTypeComponent, playerReference, best.getLeft()), false);
+			ctx.getSource().sendSuccess(Component.translatable("Player with the " + (max ? "highest" : "lowest") + " number of statistic entries (%1$s) of type \"%2$s\" out of %3$s is %4$s", best.getRight(), statTypeComponent, playerReference, best.getLeft()), false);
 		else if (stat != null)
-			ctx.getSource().sendSuccess(new TranslatableComponent("Player with the " + (max ? "highest" : "lowest") + " value (%1$s) of statistic \"%2$s\" of type \"%3$s\" out of %4$s is %5$s", stat.format(best.getRight()), new TranslatableComponent(StatUtil.getStatTranslationKey(stat)).withStyle(ChatFormatting.GRAY).withStyle(s -> s.withHoverEvent(new HoverEvent(Action.SHOW_TEXT, new TextComponent(statName)))), statTypeComponent, playerReference, best.getLeft()), false);
+			ctx.getSource().sendSuccess(Component.translatable("Player with the " + (max ? "highest" : "lowest") + " value (%1$s) of statistic \"%2$s\" of type \"%3$s\" out of %4$s is %5$s", stat.format(best.getRight()), Component.translatable(StatUtil.getStatTranslationKey(stat)).withStyle(ChatFormatting.GRAY).withStyle(s -> s.withHoverEvent(new HoverEvent(Action.SHOW_TEXT, Component.literal(statName)))), statTypeComponent, playerReference, best.getLeft()), false);
 
 		return best.getRight();
 	}

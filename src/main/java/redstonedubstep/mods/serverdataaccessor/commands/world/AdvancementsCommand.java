@@ -28,12 +28,11 @@ import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.GameProfileArgument;
 import net.minecraft.commands.arguments.ResourceLocationArgument;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentUtils;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.HoverEvent.Action;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerAdvancements;
 import net.minecraftforge.common.util.FakePlayer;
@@ -60,7 +59,7 @@ public class AdvancementsCommand {
 		FakePlayer fakePlayer = new FakePlayer(ctx.getSource().getServer().overworld(), profile);
 		PlayerAdvancements playerAdvancements = ctx.getSource().getServer().getPlayerList().getPlayerAdvancements(fakePlayer);
 		String advancementReference = recipe ? "recipe advancement" : "advancement";
-		Function<Advancement, MutableComponent> advancementFormatter = adv -> new TextComponent("").withStyle(ChatFormatting.AQUA).append(adv.getChatComponent().copy());
+		Function<Advancement, MutableComponent> advancementFormatter = adv -> Component.literal("").withStyle(ChatFormatting.AQUA).append(adv.getChatComponent().copy());
 
 		if (advancement == null) {
 			Stream<Pair<Advancement, AdvancementProgress>> allAdvancements = playerAdvancements.advancements.entrySet().stream().map(Pair::of).filter(p -> p.getRight().hasProgress()).sorted(Comparator.comparing(p -> p.getRight().getFirstProgressDate() == null ? new Date() : p.getRight().getFirstProgressDate()));
@@ -70,16 +69,16 @@ public class AdvancementsCommand {
 			int currentPage = page > totalPages ? totalPages - 1 : page - 1;
 
 			if (filteredAdvancements.isEmpty()) {
-				ctx.getSource().sendFailure(new TranslatableComponent("No %1$ss of player %2$s were found", advancementReference, profile.getName()));
+				ctx.getSource().sendFailure(Component.translatable("No %1$ss of player %2$s were found", advancementReference, profile.getName()));
 				return 0;
 			}
 
 			filteredAdvancements = FormatUtil.splitToPage(filteredAdvancements, currentPage, 20);
 
-			ctx.getSource().sendSuccess(new TranslatableComponent("Sending all %1$ss of player %2$s (%3$s): %4$s", advancementReference, profile.getName(), totalEntries, ComponentUtils.formatList(filteredAdvancements, p -> advancementFormatter.apply(p.getLeft()).append(new TranslatableComponent(" (%s%%)", p.getRight().getPercent() * 100).withStyle(ChatFormatting.GRAY)))), false);
+			ctx.getSource().sendSuccess(Component.translatable("Sending all %1$ss of player %2$s (%3$s): %4$s", advancementReference, profile.getName(), totalEntries, ComponentUtils.formatList(filteredAdvancements, p -> advancementFormatter.apply(p.getLeft()).append(Component.translatable(" (%s%%)", p.getRight().getPercent() * 100).withStyle(ChatFormatting.GRAY)))), false);
 
 			if (filteredAdvancements.size() > 0 && totalPages > 1)
-				ctx.getSource().sendSuccess(new TranslatableComponent("Displaying page %1$s out of %2$s with %3$s entries", currentPage + 1, totalPages, filteredAdvancements.size()), false);
+				ctx.getSource().sendSuccess(Component.translatable("Displaying page %1$s out of %2$s with %3$s entries", currentPage + 1, totalPages, filteredAdvancements.size()), false);
 
 			return totalEntries;
 		}
@@ -88,7 +87,7 @@ public class AdvancementsCommand {
 		float progress = advancementProgress.getPercent() * 100;
 
 		if (progress == 0) {
-			ctx.getSource().sendFailure(new TranslatableComponent("No progress on %1$s %2$s of player %3$s found", advancementReference, advancementFormatter.apply(advancement), profile.getName()));
+			ctx.getSource().sendFailure(Component.translatable("No progress on %1$s %2$s of player %3$s found", advancementReference, advancementFormatter.apply(advancement), profile.getName()));
 			return 0;
 		}
 
@@ -100,7 +99,7 @@ public class AdvancementsCommand {
 
 		int completedCriteria = (int)sortedCriteria.stream().filter(p -> p.getValue().isDone()).count();
 
-		ctx.getSource().sendSuccess(new TranslatableComponent("Sending %1$s %2$s of player %3$s: %4$s complete, %5$s out of %6$s criteria completed: %7$s", advancementReference, advancementFormatter.apply(advancement), profile.getName(), new TranslatableComponent("%s%%", progress).withStyle(ChatFormatting.GRAY), completedCriteria, sortedCriteria.size(), ComponentUtils.formatList(sortedCriteria, p -> new TextComponent(p.getLeft()).withStyle(s -> s.applyFormat(p.getRight().isDone() ? ChatFormatting.GREEN : ChatFormatting.DARK_RED).withHoverEvent(new HoverEvent(Action.SHOW_TEXT, new TextComponent("Obtained: " + (p.getRight().isDone() ? p.getRight().getObtained() : "Never"))))))), false);
+		ctx.getSource().sendSuccess(Component.translatable("Sending %1$s %2$s of player %3$s: %4$s complete, %5$s out of %6$s criteria completed: %7$s", advancementReference, advancementFormatter.apply(advancement), profile.getName(), Component.translatable("%s%%", progress).withStyle(ChatFormatting.GRAY), completedCriteria, sortedCriteria.size(), ComponentUtils.formatList(sortedCriteria, p -> Component.literal(p.getLeft()).withStyle(s -> s.applyFormat(p.getRight().isDone() ? ChatFormatting.GREEN : ChatFormatting.DARK_RED).withHoverEvent(new HoverEvent(Action.SHOW_TEXT, Component.literal("Obtained: " + (p.getRight().isDone() ? p.getRight().getObtained() : "Never"))))))), false);
 		return (int)progress;
 	}
 
@@ -120,13 +119,13 @@ public class AdvancementsCommand {
 			}
 		}
 
-		ctx.getSource().sendSuccess(new TranslatableComponent("Player %1$s has %2$s completed advancements, %3$s of which are recipe advancements", profile.getName(), totalAdvancements, recipeAdvancements), false);
+		ctx.getSource().sendSuccess(Component.translatable("Player %1$s has %2$s completed advancements, %3$s of which are recipe advancements", profile.getName(), totalAdvancements, recipeAdvancements), false);
 		return totalAdvancements;
 	}
 
 	private static GameProfile ensureOneTarget(Collection<GameProfile> profiles) throws CommandSyntaxException {
 		if (profiles.size() > 1)
-			throw new SimpleCommandExceptionType(new TextComponent("Targeting multiple players is not supported!")).create();
+			throw new SimpleCommandExceptionType(Component.literal("Targeting multiple players is not supported!")).create();
 
 		return profiles.iterator().next();
 	}

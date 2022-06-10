@@ -25,10 +25,9 @@ import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.ClickEvent.Action;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentUtils;
 import net.minecraft.network.chat.HoverEvent;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraftforge.fml.loading.FMLPaths;
 import redstonedubstep.mods.serverdataaccessor.util.FormatUtil;
 
@@ -55,7 +54,7 @@ public class CrashReportsCommand {
 			File foundCrashReport = FMLPaths.GAMEDIR.get().resolve(Paths.get("crash-reports", crashReportName + ".txt")).toFile();
 
 			if (!foundCrashReport.isFile()) {
-				ctx.getSource().sendFailure(new TranslatableComponent(name.isEmpty() ? "Could not find latest crash report" : "Could not find crash report with name \"%s\"", crashReportName));
+				ctx.getSource().sendFailure(Component.translatable(name.isEmpty() ? "Could not find latest crash report" : "Could not find crash report with name \"%s\"", crashReportName));
 				return 0;
 			}
 
@@ -64,7 +63,7 @@ public class CrashReportsCommand {
 			try {
 				crashReport = Files.newInputStream(foundCrashReport.toPath());
 			} catch(IOException e) {
-				ctx.getSource().sendFailure(new TranslatableComponent(name.isEmpty() ? "Could not read latest crash report" : "Could not read crash report with name \"%s\"", crashReportName));
+				ctx.getSource().sendFailure(Component.translatable(name.isEmpty() ? "Could not read latest crash report" : "Could not read crash report with name \"%s\"", crashReportName));
 				return 0;
 			}
 
@@ -75,26 +74,26 @@ public class CrashReportsCommand {
 				int listContentSize = crashReportLines.stream().mapToInt(s -> s.getBytes(StandardCharsets.UTF_8).length).sum();
 				int totalPages = (int)Math.ceil(listContentSize / 260000.0D);
 				int currentPage = page > totalPages ? totalPages - 1 : page - 1;
-				HoverEvent infoText = new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponent("Click to copy crash report content"));
+				HoverEvent infoText = new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Click to copy crash report content"));
 
 				crashReportLines = FormatUtil.splitStringsToPage(crashReportLines, currentPage, 260000);
 
-				ClickEvent copyToClipboard = new ClickEvent(Action.COPY_TO_CLIPBOARD, ComponentUtils.formatList(crashReportLines, new TextComponent("\n"), TextComponent::new).getString());
+				ClickEvent copyToClipboard = new ClickEvent(Action.COPY_TO_CLIPBOARD, ComponentUtils.formatList(crashReportLines, Component.literal("\n"), Component::literal).getString());
 
-				ctx.getSource().sendSuccess(new TranslatableComponent("Sending crash report \"%1$s\" (%2$s total lines): %3$s", crashReportName, totalLines, new TextComponent("Crash report content").withStyle(s -> s.applyFormat(ChatFormatting.UNDERLINE).withClickEvent(copyToClipboard).withHoverEvent(infoText))), false);
+				ctx.getSource().sendSuccess(Component.translatable("Sending crash report \"%1$s\" (%2$s total lines): %3$s", crashReportName, totalLines, Component.literal("Crash report content").withStyle(s -> s.applyFormat(ChatFormatting.UNDERLINE).withClickEvent(copyToClipboard).withHoverEvent(infoText))), false);
 
 				if (crashReportLines.size() > 0 && totalPages > 1)
-					ctx.getSource().sendSuccess(new TranslatableComponent("Sent page %1$s out of %2$s with %3$s lines", currentPage + 1, totalPages, crashReportLines.size()), false);
+					ctx.getSource().sendSuccess(Component.translatable("Sent page %1$s out of %2$s with %3$s lines", currentPage + 1, totalPages, crashReportLines.size()), false);
 			}
 			else {
 				int totalPages = (int)Math.ceil(totalLines / 20D);
 				int currentPage = page > totalPages ? totalPages - 1 : page - 1;
 
 				crashReportLines = FormatUtil.splitToPage(crashReportLines, currentPage, 20).stream().map(s -> s.replace("\t", "    ")).toList();
-				ctx.getSource().sendSuccess(new TranslatableComponent("Sending crash report \"%1$s\" (%2$s total lines): %3$s", crashReportName, totalLines, ComponentUtils.formatList(crashReportLines, s -> new TextComponent("\n" + s).withStyle(ChatFormatting.GREEN))), false);
+				ctx.getSource().sendSuccess(Component.translatable("Sending crash report \"%1$s\" (%2$s total lines): %3$s", crashReportName, totalLines, ComponentUtils.formatList(crashReportLines, s -> Component.literal("\n" + s).withStyle(ChatFormatting.GREEN))), false);
 
 				if (crashReportLines.size() > 0 && totalPages > 1)
-					ctx.getSource().sendSuccess(new TranslatableComponent("Displaying page %1$s out of %2$s with %3$s lines", currentPage + 1, totalPages, crashReportLines.size()), false);
+					ctx.getSource().sendSuccess(Component.translatable("Displaying page %1$s out of %2$s with %3$s lines", currentPage + 1, totalPages, crashReportLines.size()), false);
 			}
 
 			return totalLines;
@@ -108,9 +107,9 @@ public class CrashReportsCommand {
 		int count = crashReports == null ? 0 : crashReports.length;
 
 		if (count == 0)
-			ctx.getSource().sendFailure(new TextComponent("No crash reports found"));
+			ctx.getSource().sendFailure(Component.literal("No crash reports found"));
 		else
-			ctx.getSource().sendSuccess(new TranslatableComponent("Found %s crash reports", count), false);
+			ctx.getSource().sendSuccess(Component.translatable("Found %s crash reports", count), false);
 
 		return count;
 	}

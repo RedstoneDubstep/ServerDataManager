@@ -23,8 +23,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.storage.LevelResource;
 import redstonedubstep.mods.serverdataaccessor.util.FormatUtil;
 import redstonedubstep.mods.serverdataaccessor.util.TagFormatUtil;
@@ -45,7 +44,7 @@ public class PlayerDataCommand {
 		File[] playerDataFiles = ctx.getSource().getServer().getWorldPath(LevelResource.PLAYER_DATA_DIR).toFile().listFiles();
 
 		if (playerDataFiles == null || playerDataFiles.length == 0) {
-			ctx.getSource().sendFailure(new TextComponent("No playerdata files could be found"));
+			ctx.getSource().sendFailure(Component.literal("No playerdata files could be found"));
 			return 0;
 		}
 
@@ -60,7 +59,7 @@ public class PlayerDataCommand {
 				fileName = uuid.toString();
 			}
 			else {
-				ctx.getSource().sendFailure(new TranslatableComponent("UUID of player with name \"%s\" could not be determined", name));
+				ctx.getSource().sendFailure(Component.translatable("UUID of player with name \"%s\" could not be determined", name));
 				return 0;
 			}
 		}
@@ -70,7 +69,7 @@ public class PlayerDataCommand {
 		}
 
 		if (playerDataFile == null) {
-			ctx.getSource().sendFailure(new TranslatableComponent("No playerdata file of player with UUID \"%s\" could be found", fileName));
+			ctx.getSource().sendFailure(Component.translatable("No playerdata file of player with UUID \"%s\" could be found", fileName));
 			return 0;
 		}
 
@@ -79,7 +78,7 @@ public class PlayerDataCommand {
 		try {
 			playerData = NbtIo.readCompressed(playerDataFile);
 		} catch(IOException e) {
-			ctx.getSource().sendFailure(new TranslatableComponent("Failed to read playerdata of player with UUID \"%s\"", fileName));
+			ctx.getSource().sendFailure(Component.translatable("Failed to read playerdata of player with UUID \"%s\"", fileName));
 			return 0;
 		}
 
@@ -90,7 +89,7 @@ public class PlayerDataCommand {
 		int currentPage = page > totalPages ? totalPages - 1 : page - 1;
 
 		if (totalTagEntries == 0) {
-			ctx.getSource().sendFailure(new TranslatableComponent("Playerdata of player with UUID \"%s\" does not contain any tags at given path", fileName));
+			ctx.getSource().sendFailure(Component.translatable("Playerdata of player with UUID \"%s\" does not contain any tags at given path", fileName));
 			return 0;
 		}
 
@@ -98,10 +97,10 @@ public class PlayerDataCommand {
 			TagFormatUtil.removeNestedCollectionTags(compoundTag);
 
 		TagFormatUtil.splitTagToPage(foundTag, currentPage, 50);
-		ctx.getSource().sendSuccess(new TranslatableComponent("Sending playerdata of player with UUID \"%1$s\" at path \"%2$s\" (%3$s total entries): %4$s", new TextComponent(fileName).withStyle(ChatFormatting.AQUA), new TextComponent(path != null ? path.toString() : "").withStyle(ChatFormatting.AQUA), totalTagEntries, NbtUtils.toPrettyComponent(foundTag)), false);
+		ctx.getSource().sendSuccess(Component.translatable("Sending playerdata of player with UUID \"%1$s\" at path \"%2$s\" (%3$s total entries): %4$s", Component.literal(fileName).withStyle(ChatFormatting.AQUA), Component.literal(path != null ? path.toString() : "").withStyle(ChatFormatting.AQUA), totalTagEntries, NbtUtils.toPrettyComponent(foundTag)), false);
 
 		if (totalPages > 1)
-			ctx.getSource().sendSuccess(new TranslatableComponent("Displaying page %1$s out of %2$s with %3$s entries", currentPage + 1, totalPages, TagFormatUtil.getTagSize(foundTag)), false);
+			ctx.getSource().sendSuccess(Component.translatable("Displaying page %1$s out of %2$s with %3$s entries", currentPage + 1, totalPages, TagFormatUtil.getTagSize(foundTag)), false);
 
 		return totalTagEntries;
 	}
@@ -111,9 +110,9 @@ public class PlayerDataCommand {
 		int count = playerDataFiles == null ? 0 : (int)Arrays.stream(playerDataFiles).filter(f -> f.getName().endsWith(".dat")).count();
 
 		if (count == 0)
-			ctx.getSource().sendFailure(new TextComponent("No playerdata files found"));
+			ctx.getSource().sendFailure(Component.literal("No playerdata files found"));
 		else
-			ctx.getSource().sendSuccess(new TranslatableComponent("Found %s playerdata files", count), false);
+			ctx.getSource().sendSuccess(Component.translatable("Found %s playerdata files", count), false);
 
 		return count;
 	}

@@ -14,8 +14,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.storage.WorldData;
 import net.minecraftforge.common.ForgeHooks;
 import redstonedubstep.mods.serverdataaccessor.util.TagFormatUtil;
@@ -45,7 +44,7 @@ public class WorldDataCommand {
 		int currentPage = page > totalPages ? totalPages - 1 : page - 1;
 
 		if (totalTagEntries == 0) {
-			ctx.getSource().sendFailure(new TextComponent("Vanilla world data does not contain any tags at given path"));
+			ctx.getSource().sendFailure(Component.literal("Vanilla world data does not contain any tags at given path"));
 			return 0;
 		}
 
@@ -53,10 +52,10 @@ public class WorldDataCommand {
 			TagFormatUtil.removeNestedCollectionTags(compoundTag);
 
 		TagFormatUtil.splitTagToPage(foundTag, currentPage, 50);
-		ctx.getSource().sendSuccess(new TranslatableComponent("Sending vanilla world data at path \"%1$s\" (%2$s total entries): %3$s", new TextComponent(path != null ? path.toString() : "").withStyle(ChatFormatting.AQUA), totalTagEntries, NbtUtils.toPrettyComponent(foundTag)), false);
+		ctx.getSource().sendSuccess(Component.translatable("Sending vanilla world data at path \"%1$s\" (%2$s total entries): %3$s", Component.literal(path != null ? path.toString() : "").withStyle(ChatFormatting.AQUA), totalTagEntries, NbtUtils.toPrettyComponent(foundTag)), false);
 
 		if (totalPages > 1)
-			ctx.getSource().sendSuccess(new TranslatableComponent("Displaying page %1$s out of %2$s with %3$s entries", currentPage + 1, totalPages, TagFormatUtil.getTagSize(foundTag)), false);
+			ctx.getSource().sendSuccess(Component.translatable("Displaying page %1$s out of %2$s with %3$s entries", currentPage + 1, totalPages, TagFormatUtil.getTagSize(foundTag)), false);
 
 		return totalTagEntries;
 	}
@@ -83,7 +82,7 @@ public class WorldDataCommand {
 		}
 
 		if (foundTag == null || !success) {
-			ctx.getSource().sendFailure(new TranslatableComponent("FML world data does not contain any tags at given path"));
+			ctx.getSource().sendFailure(Component.translatable("FML world data does not contain any tags at given path"));
 			return 0;
 		}
 
@@ -92,7 +91,7 @@ public class WorldDataCommand {
 		int currentPage = page > totalPages ? totalPages - 1 : page - 1;
 
 		if (totalTagEntries == 0) {
-			ctx.getSource().sendFailure(new TextComponent("FML world data does not contain any tags at given path"));
+			ctx.getSource().sendFailure(Component.literal("FML world data does not contain any tags at given path"));
 			return 0;
 		}
 
@@ -102,10 +101,10 @@ public class WorldDataCommand {
 			foundTag = TagFormatUtil.formatResourceEntriesToKeys(listTag);
 
 		TagFormatUtil.splitTagToPage(foundTag, currentPage, 50);
-		ctx.getSource().sendSuccess(new TranslatableComponent("Sending FML world data at path \"%1$s\" (%2$s total entries): %3$s", new TextComponent(path).withStyle(ChatFormatting.AQUA), totalTagEntries, NbtUtils.toPrettyComponent(foundTag)), false);
+		ctx.getSource().sendSuccess(Component.translatable("Sending FML world data at path \"%1$s\" (%2$s total entries): %3$s", Component.literal(path).withStyle(ChatFormatting.AQUA), totalTagEntries, NbtUtils.toPrettyComponent(foundTag)), false);
 
 		if (totalPages > 1)
-			ctx.getSource().sendSuccess(new TranslatableComponent("Displaying page %1$s out of %2$s with %3$s entries", currentPage + 1, totalPages, TagFormatUtil.getTagSize(foundTag)), false);
+			ctx.getSource().sendSuccess(Component.translatable("Displaying page %1$s out of %2$s with %3$s entries", currentPage + 1, totalPages, TagFormatUtil.getTagSize(foundTag)), false);
 
 		return totalTagEntries;
 	}

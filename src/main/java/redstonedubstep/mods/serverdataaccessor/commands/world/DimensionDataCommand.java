@@ -18,8 +18,7 @@ import net.minecraft.commands.arguments.NbtPathArgument.NbtPath;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.storage.DimensionDataStorage;
@@ -45,7 +44,7 @@ public class DimensionDataCommand {
 		try {
 			 data = dataStorage.readTagFromDisk(filename, SharedConstants.getCurrentVersion().getDataVersion().getVersion()).getCompound("data");
 		} catch(Exception exception) {
-			ctx.getSource().sendFailure(new TranslatableComponent("Couldn't read data \"%1$s\" of dimension \"%2$s\"", filename, levelName));
+			ctx.getSource().sendFailure(Component.translatable("Couldn't read data \"%1$s\" of dimension \"%2$s\"", filename, levelName));
 			return 0;
 		}
 
@@ -56,7 +55,7 @@ public class DimensionDataCommand {
 		int currentPage = page > totalPages ? totalPages - 1 : page - 1;
 
 		if (totalTagEntries == 0) {
-			ctx.getSource().sendFailure(new TranslatableComponent("Data \"%1$s\" of dimension \"%2$s\" does not contain any tags at given path", filename, levelName));
+			ctx.getSource().sendFailure(Component.translatable("Data \"%1$s\" of dimension \"%2$s\" does not contain any tags at given path", filename, levelName));
 			return 0;
 		}
 
@@ -64,10 +63,10 @@ public class DimensionDataCommand {
 			TagFormatUtil.removeNestedCollectionTags(compoundTag);
 
 		TagFormatUtil.splitTagToPage(foundTag, currentPage, 50);
-		ctx.getSource().sendSuccess(new TranslatableComponent("Sending data with name \"%1$s\" at path \"%2$s\" of dimension \"%3$s\" (%4$s total entries): %5$s", new TextComponent(filename).withStyle(ChatFormatting.GRAY), new TextComponent(path != null ? path.toString() : "").withStyle(ChatFormatting.AQUA), levelName, totalTagEntries, NbtUtils.toPrettyComponent(foundTag)), false);
+		ctx.getSource().sendSuccess(Component.translatable("Sending data with name \"%1$s\" at path \"%2$s\" of dimension \"%3$s\" (%4$s total entries): %5$s", Component.literal(filename).withStyle(ChatFormatting.GRAY), Component.literal(path != null ? path.toString() : "").withStyle(ChatFormatting.AQUA), levelName, totalTagEntries, NbtUtils.toPrettyComponent(foundTag)), false);
 
 		if (totalPages > 1)
-			ctx.getSource().sendSuccess(new TranslatableComponent("Displaying page %1$s out of %2$s with %3$s entries", currentPage + 1, totalPages, TagFormatUtil.getTagSize(foundTag)), false);
+			ctx.getSource().sendSuccess(Component.translatable("Displaying page %1$s out of %2$s with %3$s entries", currentPage + 1, totalPages, TagFormatUtil.getTagSize(foundTag)), false);
 
 		return totalTagEntries;
 	}

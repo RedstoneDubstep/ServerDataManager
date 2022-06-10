@@ -17,8 +17,6 @@ import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentUtils;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.dedicated.DedicatedServer;
 
 public class ServerPropertiesCommand {
@@ -36,17 +34,17 @@ public class ServerPropertiesCommand {
 
 		if (name.isEmpty()) {
 			List<Pair<String, String>> sortedProperties = serverProperties.entrySet().stream().map(e -> Pair.of(e.getKey().toString(), e.getValue().toString())).sorted(Comparator.comparing(Pair::getLeft)).toList();
-			Component propertiesComponent = ComponentUtils.formatList(sortedProperties, p -> new TextComponent(p.getKey()).withStyle(ChatFormatting.AQUA).append("=").append(new TextComponent(p.getValue()).withStyle(ChatFormatting.GREEN)));
+			Component propertiesComponent = ComponentUtils.formatList(sortedProperties, p -> Component.literal(p.getKey()).withStyle(ChatFormatting.AQUA).append("=").append(Component.literal(p.getValue()).withStyle(ChatFormatting.GREEN)));
 
-			ctx.getSource().sendSuccess(new TranslatableComponent("The following %s properties were found: \n", serverProperties.entrySet().size()).append(propertiesComponent), false);
+			ctx.getSource().sendSuccess(Component.translatable("The following %s properties were found: \n", serverProperties.entrySet().size()).append(propertiesComponent), false);
 			return sortedProperties.size();
 		}
 		else if (!serverProperties.containsKey(name)) {
-			ctx.getSource().sendFailure(new TranslatableComponent("Could not find property with name \"%s\"", name));
+			ctx.getSource().sendFailure(Component.translatable("Could not find property with name \"%s\"", name));
 			return 0;
 		}
 
-		ctx.getSource().sendSuccess(new TranslatableComponent("Property \"%1$s\" has the following value: %2$s", new TextComponent(name).withStyle(ChatFormatting.AQUA), new TextComponent(serverProperties.get(name).toString()).withStyle(ChatFormatting.GREEN)), false);
+		ctx.getSource().sendSuccess(Component.translatable("Property \"%1$s\" has the following value: %2$s", Component.literal(name).withStyle(ChatFormatting.AQUA), Component.literal(serverProperties.get(name).toString()).withStyle(ChatFormatting.GREEN)), false);
 		return 1;
 	}
 }

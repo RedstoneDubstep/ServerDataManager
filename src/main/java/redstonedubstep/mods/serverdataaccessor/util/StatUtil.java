@@ -16,7 +16,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap.Entry;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.Registry;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
@@ -79,7 +79,7 @@ public class StatUtil {
 			if (optionalStat.isPresent())
 				stat = Pair.of(optionalStat.get().getKey(), optionalStat.get().getIntValue());
 			else
-				throw new SimpleCommandExceptionType(new TranslatableComponent("Couldn't find statistic with id \"%1$s\" of type \"%2$s\"", statId, new TranslatableComponent(StatUtil.getStatTypeTranslation(statType)))).create();
+				throw new SimpleCommandExceptionType(Component.translatable("Couldn't find statistic with id \"%1$s\" of type \"%2$s\"", statId, Component.translatable(StatUtil.getStatTypeTranslation(statType)))).create();
 		}
 
 		return stat;

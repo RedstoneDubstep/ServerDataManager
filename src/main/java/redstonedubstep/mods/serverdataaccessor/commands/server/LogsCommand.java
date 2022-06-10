@@ -28,10 +28,9 @@ import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.ClickEvent.Action;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentUtils;
 import net.minecraft.network.chat.HoverEvent;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraftforge.fml.loading.FMLPaths;
 import redstonedubstep.mods.serverdataaccessor.util.FormatUtil;
 
@@ -58,7 +57,7 @@ public class LogsCommand {
 		Path logGzPath = FMLPaths.GAMEDIR.get().resolve(Paths.get("logs",name + ".log.gz"));
 
 		if (logPath.toFile().isFile() && logGzPath.toFile().isFile()) {
-			ctx.getSource().sendFailure(new TextComponent("Could not find log file with name " + name));
+			ctx.getSource().sendFailure(Component.literal("Could not find log file with name " + name));
 			return 0;
 		}
 
@@ -67,7 +66,7 @@ public class LogsCommand {
 		try {
 			log = logPath.toFile().isFile() ? Files.newInputStream(logPath.toFile().toPath()) : new GZIPInputStream(Files.newInputStream(logGzPath.toFile().toPath()));
 		} catch(IOException e) {
-			ctx.getSource().sendFailure(new TextComponent("Couldn't find log file " + name));
+			ctx.getSource().sendFailure(Component.literal("Couldn't find log file " + name));
 			return 0;
 		}
 
@@ -78,16 +77,16 @@ public class LogsCommand {
 			int listContentSize = logLines.stream().mapToInt(s -> s.getBytes(StandardCharsets.UTF_8).length).sum();
 			int totalPages = (int)Math.ceil(listContentSize / 260000.0D);
 			int currentPage = page > totalPages ? totalPages - 1 : page - 1;
-			HoverEvent infoText = new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponent("Click to copy log content"));
+			HoverEvent infoText = new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Click to copy log content"));
 
 			logLines = FormatUtil.splitStringsToPage(logLines, currentPage, 260000);
 
-			ClickEvent copyToClipboard = new ClickEvent(Action.COPY_TO_CLIPBOARD, ComponentUtils.formatList(logLines, new TextComponent("\n"), TextComponent::new).getString());
+			ClickEvent copyToClipboard = new ClickEvent(Action.COPY_TO_CLIPBOARD, ComponentUtils.formatList(logLines, Component.literal("\n"), Component::literal).getString());
 
-			ctx.getSource().sendSuccess(new TranslatableComponent("Sending log \"%1$s\" (%2$s total lines): %3$s", name, totalLines, new TextComponent("Log content").withStyle(s -> s.applyFormat(ChatFormatting.UNDERLINE).withClickEvent(copyToClipboard).withHoverEvent(infoText))), false);
+			ctx.getSource().sendSuccess(Component.translatable("Sending log \"%1$s\" (%2$s total lines): %3$s", name, totalLines, Component.literal("Log content").withStyle(s -> s.applyFormat(ChatFormatting.UNDERLINE).withClickEvent(copyToClipboard).withHoverEvent(infoText))), false);
 
 			if (logLines.size() > 0 && totalPages > 1)
-				ctx.getSource().sendSuccess(new TranslatableComponent("Sent page %1$s out of %2$s with %3$s lines", currentPage + 1, totalPages, logLines.size()), false);
+				ctx.getSource().sendSuccess(Component.translatable("Sent page %1$s out of %2$s with %3$s lines", currentPage + 1, totalPages, logLines.size()), false);
 		}
 		else {
 			int totalPages = (int)Math.ceil(totalLines / 20D);
@@ -97,10 +96,10 @@ public class LogsCommand {
 
 			List<Pair<String, String>> splitLogLines = FormatUtil.splitLogLines(logLines);
 
-			ctx.getSource().sendSuccess(new TranslatableComponent("Sending log \"%1$s\" (%2$s total lines): %3$s", name, totalLines, ComponentUtils.formatList(splitLogLines, l -> new TextComponent("\n" + l.getLeft()).withStyle(ChatFormatting.DARK_GRAY).append(new TextComponent(l.getRight()).withStyle(ChatFormatting.GREEN)))), false);
+			ctx.getSource().sendSuccess(Component.translatable("Sending log \"%1$s\" (%2$s total lines): %3$s", name, totalLines, ComponentUtils.formatList(splitLogLines, l -> Component.literal("\n" + l.getLeft()).withStyle(ChatFormatting.DARK_GRAY).append(Component.literal(l.getRight()).withStyle(ChatFormatting.GREEN)))), false);
 
 			if (logLines.size() > 0 && totalPages > 1)
-				ctx.getSource().sendSuccess(new TranslatableComponent("Displaying page %1$s out of %2$s with %3$s lines", currentPage + 1, totalPages, splitLogLines.size()), false);
+				ctx.getSource().sendSuccess(Component.translatable("Displaying page %1$s out of %2$s with %3$s lines", currentPage + 1, totalPages, splitLogLines.size()), false);
 		}
 
 		return totalLines;
@@ -111,13 +110,13 @@ public class LogsCommand {
 		int totalCount = logFiles == null ? 0 : logFiles.length;
 
 		if (totalCount == 0) {
-			ctx.getSource().sendFailure(new TextComponent("No log files found"));
+			ctx.getSource().sendFailure(Component.literal("No log files found"));
 			return 0;
 		}
 
 		int debugFileCount = (int)Arrays.stream(logFiles).filter(f -> f.getName().contains("debug")).count();
 
-		ctx.getSource().sendSuccess(new TranslatableComponent("Found %1$s log files, %2$s of which are debug log files", totalCount, debugFileCount), false);
+		ctx.getSource().sendSuccess(Component.translatable("Found %1$s log files, %2$s of which are debug log files", totalCount, debugFileCount), false);
 		return totalCount;
 	}
 }

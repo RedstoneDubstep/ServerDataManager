@@ -24,8 +24,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.storage.LevelResource;
 import redstonedubstep.mods.serverdataaccessor.util.TagFormatUtil;
@@ -47,7 +46,7 @@ public class StructuresCommand {
 		File structureFile = generatedFolderPath.resolve(Path.of(name.getNamespace(), "structures", name.getPath() + ".nbt")).toFile();
 
 		if (!structureFile.isFile()) {
-			ctx.getSource().sendFailure(new TranslatableComponent("No structure with name %s could be found", name));
+			ctx.getSource().sendFailure(Component.translatable("No structure with name %s could be found", name));
 			return 0;
 		}
 
@@ -56,7 +55,7 @@ public class StructuresCommand {
 		try {
 			structureData = NbtIo.readCompressed(structureFile);
 		} catch(IOException e) {
-			ctx.getSource().sendFailure(new TranslatableComponent("Failed to read structure with name %s", name));
+			ctx.getSource().sendFailure(Component.translatable("Failed to read structure with name %s", name));
 			return 0;
 		}
 
@@ -67,7 +66,7 @@ public class StructuresCommand {
 		int currentPage = page > totalPages ? totalPages - 1 : page - 1;
 
 		if (totalTagEntries == 0) {
-			ctx.getSource().sendFailure(new TranslatableComponent("Data of structure with name %s does not contain any tags at given path", name));
+			ctx.getSource().sendFailure(Component.translatable("Data of structure with name %s does not contain any tags at given path", name));
 			return 0;
 		}
 
@@ -75,10 +74,10 @@ public class StructuresCommand {
 			TagFormatUtil.removeNestedCollectionTags(compoundTag);
 
 		TagFormatUtil.splitTagToPage(foundTag, currentPage, 50);
-		ctx.getSource().sendSuccess(new TranslatableComponent("Sending data of structure with name %1$s at path \"%2$s\" (%3$s total entries): %4$s", new TextComponent(name.toString()).withStyle(ChatFormatting.AQUA), new TextComponent(path != null ? path.toString() : "").withStyle(ChatFormatting.AQUA), totalTagEntries, NbtUtils.toPrettyComponent(foundTag)), false);
+		ctx.getSource().sendSuccess(Component.translatable("Sending data of structure with name %1$s at path \"%2$s\" (%3$s total entries): %4$s", Component.literal(name.toString()).withStyle(ChatFormatting.AQUA), Component.literal(path != null ? path.toString() : "").withStyle(ChatFormatting.AQUA), totalTagEntries, NbtUtils.toPrettyComponent(foundTag)), false);
 
 		if (totalPages > 1)
-			ctx.getSource().sendSuccess(new TranslatableComponent("Displaying page %1$s out of %2$s with %3$s entries", currentPage + 1, totalPages, TagFormatUtil.getTagSize(foundTag)), false);
+			ctx.getSource().sendSuccess(Component.translatable("Displaying page %1$s out of %2$s with %3$s entries", currentPage + 1, totalPages, TagFormatUtil.getTagSize(foundTag)), false);
 
 		return totalTagEntries;
 	}
@@ -89,9 +88,9 @@ public class StructuresCommand {
 		int namespaces = (int)structureFiles.stream().map(ResourceLocation::getNamespace).distinct().count();
 
 		if (count == 0)
-			ctx.getSource().sendFailure(new TextComponent("No structures found"));
+			ctx.getSource().sendFailure(Component.literal("No structures found"));
 		else
-			ctx.getSource().sendSuccess(new TranslatableComponent("Found %1$s structures with %2$s different namespaces", count, namespaces), false);
+			ctx.getSource().sendSuccess(Component.translatable("Found %1$s structures with %2$s different namespaces", count, namespaces), false);
 
 		return count;
 	}

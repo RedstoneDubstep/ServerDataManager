@@ -7,7 +7,7 @@ import com.mojang.brigadier.context.CommandContext;
 
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.storage.LevelResource;
 
 public class RegionFileCommand {
@@ -24,7 +24,7 @@ public class RegionFileCommand {
 		long totalSize = 0;
 
 		if (regionFiles == null || regionFiles.length == 0) {
-			ctx.getSource().sendFailure(new TranslatableComponent("Could not find region files in folder \"%s\"", path));
+			ctx.getSource().sendFailure(Component.translatable("Could not find region files in folder \"%s\"", path));
 			return 0;
 		}
 
@@ -37,7 +37,7 @@ public class RegionFileCommand {
 			}
 		}
 
-		ctx.getSource().sendSuccess(new TranslatableComponent("Found %1$s region files of type \"%2$s\", of which %3$s are empty, with a total size of %4$s kilobytes", regionFiles.length, path, regionFiles.length - notEmptyFiles, totalSize / 1024), false);
+		ctx.getSource().sendSuccess(Component.translatable("Found %1$s region files of type \"%2$s\", of which %3$s are empty, with a total size of %4$s kilobytes", regionFiles.length, path, regionFiles.length - notEmptyFiles, totalSize / 1024), false);
 		return regionFiles.length;
 	}
 }
