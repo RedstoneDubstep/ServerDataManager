@@ -25,7 +25,7 @@ public class SDMConfig {
 					.comment("What op permission level should be the requirement for being able to execute /serverdata?")
 					.defineInRange("serverdataCommandPermissionLevel", 2, 0, 4);
 			worlddataCommandPermissionLevel = builder
-					.comment("What op permission level should be the requirement for being able to execute /worlddata")
+					.comment("What op permission level should be the requirement for being able to execute /worlddata?")
 					.defineInRange("worlddataCommandPermissionLevel", 2, 0, 4);
 		}
 	}

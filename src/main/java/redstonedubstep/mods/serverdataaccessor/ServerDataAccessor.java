@@ -21,7 +21,7 @@ public class ServerDataAccessor {
 	}
 
 	public void registerCommands(RegisterCommandsEvent event){
-		if (event.getEnvironment() == CommandSelection.DEDICATED)
+		if (event.getCommandSelection() == CommandSelection.DEDICATED)
 			CommandRoot.registerServerDataCommand(event.getDispatcher());
 
 		CommandRoot.registerWorldDataCommand(event.getDispatcher());
