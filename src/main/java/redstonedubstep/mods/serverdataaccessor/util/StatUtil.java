@@ -15,7 +15,7 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap.Entry;
 import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -116,9 +116,9 @@ public class StatUtil {
 
 	public static StatType<?> getStatType(CommandContext<CommandSourceStack> ctx, String argument) throws CommandSyntaxException {
 		ResourceKey<?> resourceKey = ctx.getArgument(argument, ResourceKey.class);
-		Optional<ResourceKey<StatType<?>>> optional = resourceKey.cast(Registry.STAT_TYPE_REGISTRY);
+		Optional<ResourceKey<StatType<?>>> optional = resourceKey.cast(Registries.STAT_TYPE);
 		ResourceKey<StatType<?>> statKey = optional.orElseThrow(() -> new SimpleCommandExceptionType(new LiteralMessage("Unknown statistic")).create());
 
-		return ctx.getSource().getServer().registryAccess().registryOrThrow(Registry.STAT_TYPE_REGISTRY).getOptional(statKey).orElseThrow(() -> new SimpleCommandExceptionType(new LiteralMessage("Unknown statistic")).create());
+		return ctx.getSource().getServer().registryAccess().registryOrThrow(Registries.STAT_TYPE).getOptional(statKey).orElseThrow(() -> new SimpleCommandExceptionType(new LiteralMessage("Unknown statistic")).create());
 	}
 }

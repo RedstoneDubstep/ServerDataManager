@@ -27,7 +27,7 @@ import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.GameProfileArgument;
 import net.minecraft.commands.arguments.ResourceKeyArgument;
 import net.minecraft.commands.arguments.ResourceLocationArgument;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentUtils;
 import net.minecraft.network.chat.HoverEvent;
@@ -50,29 +50,29 @@ public class StatisticsCommand {
 		return Commands.literal("statistics")
 				.then(Commands.literal("players")
 						.then(Commands.argument("players", GameProfileArgument.gameProfile())
-								.then(Commands.argument("type", ResourceKeyArgument.key(Registry.STAT_TYPE_REGISTRY)).executes(ctx -> getStatFrom(ctx, GameProfileArgument.getGameProfiles(ctx, "players"), StatUtil.getStatType(ctx, "type"), 1, null))
+								.then(Commands.argument("type", ResourceKeyArgument.key(Registries.STAT_TYPE)).executes(ctx -> getStatFrom(ctx, GameProfileArgument.getGameProfiles(ctx, "players"), StatUtil.getStatType(ctx, "type"), 1, null))
 										.then(Commands.argument("page", IntegerArgumentType.integer(1)).executes(ctx -> getStatFrom(ctx, GameProfileArgument.getGameProfiles(ctx, "players"), StatUtil.getStatType(ctx, "type"), IntegerArgumentType.getInteger(ctx, "page"), null))
 												.then(Commands.argument("id", ResourceLocationArgument.id()).suggests(SUGGEST_STATS).executes(ctx -> getStatFrom(ctx, GameProfileArgument.getGameProfiles(ctx, "players"), StatUtil.getStatType(ctx, "type"), IntegerArgumentType.getInteger(ctx, "page"), ResourceLocationArgument.getId(ctx, "id"))))))))
 				.then(Commands.literal("global")
-						.then(Commands.argument("type", ResourceKeyArgument.key(Registry.STAT_TYPE_REGISTRY)).executes(ctx -> getStatFrom(ctx, null, StatUtil.getStatType(ctx, "type"), 1, null))
+						.then(Commands.argument("type", ResourceKeyArgument.key(Registries.STAT_TYPE)).executes(ctx -> getStatFrom(ctx, null, StatUtil.getStatType(ctx, "type"), 1, null))
 								.then(Commands.argument("page", IntegerArgumentType.integer(1)).executes(ctx -> getStatFrom(ctx, null, StatUtil.getStatType(ctx, "type"), IntegerArgumentType.getInteger(ctx, "page"), null))
 										.then(Commands.argument("id", ResourceLocationArgument.id()).suggests(SUGGEST_STATS).executes(ctx -> getStatFrom(ctx, null, StatUtil.getStatType(ctx, "type"), IntegerArgumentType.getInteger(ctx, "page"), ResourceLocationArgument.getId(ctx, "id")))))))
 				.then(Commands.literal("compare")
 						.then(Commands.literal("max")
 								.then(Commands.literal("players")
 										.then(Commands.argument("players", GameProfileArgument.gameProfile())
-												.then(Commands.argument("type", ResourceKeyArgument.key(Registry.STAT_TYPE_REGISTRY)).executes(ctx -> getSpecificStat(ctx, true, GameProfileArgument.getGameProfiles(ctx, "players"), StatUtil.getStatType(ctx, "type"), null))
+												.then(Commands.argument("type", ResourceKeyArgument.key(Registries.STAT_TYPE)).executes(ctx -> getSpecificStat(ctx, true, GameProfileArgument.getGameProfiles(ctx, "players"), StatUtil.getStatType(ctx, "type"), null))
 														.then(Commands.argument("id", ResourceLocationArgument.id()).suggests(SUGGEST_STATS).executes(ctx -> getSpecificStat(ctx, true, GameProfileArgument.getGameProfiles(ctx, "players"), StatUtil.getStatType(ctx, "type"), ResourceLocationArgument.getId(ctx, "id")))))))
 								.then(Commands.literal("global")
-										.then(Commands.argument("type", ResourceKeyArgument.key(Registry.STAT_TYPE_REGISTRY)).executes(ctx -> getSpecificStat(ctx, true, null, StatUtil.getStatType(ctx, "type"), null))
+										.then(Commands.argument("type", ResourceKeyArgument.key(Registries.STAT_TYPE)).executes(ctx -> getSpecificStat(ctx, true, null, StatUtil.getStatType(ctx, "type"), null))
 												.then(Commands.argument("id", ResourceLocationArgument.id()).suggests(SUGGEST_STATS).executes(ctx -> getSpecificStat(ctx, true, null, StatUtil.getStatType(ctx, "type"), ResourceLocationArgument.getId(ctx, "id")))))))
 						.then(Commands.literal("min")
 								.then(Commands.literal("players")
 										.then(Commands.argument("players", GameProfileArgument.gameProfile())
-												.then(Commands.argument("type", ResourceKeyArgument.key(Registry.STAT_TYPE_REGISTRY)).executes(ctx -> getSpecificStat(ctx, false, GameProfileArgument.getGameProfiles(ctx, "players"), StatUtil.getStatType(ctx, "type"), null))
+												.then(Commands.argument("type", ResourceKeyArgument.key(Registries.STAT_TYPE)).executes(ctx -> getSpecificStat(ctx, false, GameProfileArgument.getGameProfiles(ctx, "players"), StatUtil.getStatType(ctx, "type"), null))
 														.then(Commands.argument("id", ResourceLocationArgument.id()).suggests(SUGGEST_STATS).executes(ctx -> getSpecificStat(ctx, false, GameProfileArgument.getGameProfiles(ctx, "players"), StatUtil.getStatType(ctx, "type"), ResourceLocationArgument.getId(ctx, "id")))))))
 								.then(Commands.literal("global")
-										.then(Commands.argument("type", ResourceKeyArgument.key(Registry.STAT_TYPE_REGISTRY)).executes(ctx -> getSpecificStat(ctx, false, null, StatUtil.getStatType(ctx, "type"), null))
+										.then(Commands.argument("type", ResourceKeyArgument.key(Registries.STAT_TYPE)).executes(ctx -> getSpecificStat(ctx, false, null, StatUtil.getStatType(ctx, "type"), null))
 												.then(Commands.argument("id", ResourceLocationArgument.id()).suggests(SUGGEST_STATS).executes(ctx -> getSpecificStat(ctx, false, null, StatUtil.getStatType(ctx, "type"), ResourceLocationArgument.getId(ctx, "id"))))))));
 	}
 
