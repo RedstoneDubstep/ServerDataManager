@@ -75,25 +75,23 @@ public class CrashReportsCommand {
 				int totalPages = (int)Math.ceil(listContentSize / 260000.0D);
 				int currentPage = page > totalPages ? totalPages - 1 : page - 1;
 				HoverEvent infoText = new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Click to copy crash report content"));
+				List<String> splitCrashReportLines = FormatUtil.splitStringsToPage(crashReportLines, currentPage, 260000);
+				ClickEvent copyToClipboard = new ClickEvent(Action.COPY_TO_CLIPBOARD, ComponentUtils.formatList(splitCrashReportLines, Component.literal("\n"), Component::literal).getString());
 
-				crashReportLines = FormatUtil.splitStringsToPage(crashReportLines, currentPage, 260000);
+				ctx.getSource().sendSuccess(() -> Component.translatable("Sending crash report \"%1$s\" (%2$s total lines): %3$s", crashReportName, totalLines, Component.literal("Crash report content").withStyle(s -> s.applyFormat(ChatFormatting.UNDERLINE).withClickEvent(copyToClipboard).withHoverEvent(infoText))), false);
 
-				ClickEvent copyToClipboard = new ClickEvent(Action.COPY_TO_CLIPBOARD, ComponentUtils.formatList(crashReportLines, Component.literal("\n"), Component::literal).getString());
-
-				ctx.getSource().sendSuccess(Component.translatable("Sending crash report \"%1$s\" (%2$s total lines): %3$s", crashReportName, totalLines, Component.literal("Crash report content").withStyle(s -> s.applyFormat(ChatFormatting.UNDERLINE).withClickEvent(copyToClipboard).withHoverEvent(infoText))), false);
-
-				if (crashReportLines.size() > 0 && totalPages > 1)
-					ctx.getSource().sendSuccess(Component.translatable("Sent page %1$s out of %2$s with %3$s lines", currentPage + 1, totalPages, crashReportLines.size()), false);
+				if (splitCrashReportLines.size() > 0 && totalPages > 1)
+					ctx.getSource().sendSuccess(() -> Component.translatable("Sent page %1$s out of %2$s with %3$s lines", currentPage + 1, totalPages, splitCrashReportLines.size()), false);
 			}
 			else {
 				int totalPages = (int)Math.ceil(totalLines / 20D);
 				int currentPage = page > totalPages ? totalPages - 1 : page - 1;
+				List<String> splitCrashReportLines = FormatUtil.splitToPage(crashReportLines, currentPage, 20).stream().map(s -> s.replace("\t", "    ")).toList();
 
-				crashReportLines = FormatUtil.splitToPage(crashReportLines, currentPage, 20).stream().map(s -> s.replace("\t", "    ")).toList();
-				ctx.getSource().sendSuccess(Component.translatable("Sending crash report \"%1$s\" (%2$s total lines): %3$s", crashReportName, totalLines, ComponentUtils.formatList(crashReportLines, s -> Component.literal("\n" + s).withStyle(ChatFormatting.GREEN))), false);
+				ctx.getSource().sendSuccess(() -> Component.translatable("Sending crash report \"%1$s\" (%2$s total lines): %3$s", crashReportName, totalLines, ComponentUtils.formatList(splitCrashReportLines, s -> Component.literal("\n" + s).withStyle(ChatFormatting.GREEN))), false);
 
-				if (crashReportLines.size() > 0 && totalPages > 1)
-					ctx.getSource().sendSuccess(Component.translatable("Displaying page %1$s out of %2$s with %3$s lines", currentPage + 1, totalPages, crashReportLines.size()), false);
+				if (splitCrashReportLines.size() > 0 && totalPages > 1)
+					ctx.getSource().sendSuccess(() -> Component.translatable("Displaying page %1$s out of %2$s with %3$s lines", currentPage + 1, totalPages, splitCrashReportLines.size()), false);
 			}
 
 			return totalLines;
@@ -109,7 +107,7 @@ public class CrashReportsCommand {
 		if (count == 0)
 			ctx.getSource().sendFailure(Component.literal("No crash reports found"));
 		else
-			ctx.getSource().sendSuccess(Component.translatable("Found %s crash reports", count), false);
+			ctx.getSource().sendSuccess(() -> Component.translatable("Found %s crash reports", count), false);
 
 		return count;
 	}

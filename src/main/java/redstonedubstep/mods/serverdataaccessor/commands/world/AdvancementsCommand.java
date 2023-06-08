@@ -73,12 +73,12 @@ public class AdvancementsCommand {
 				return 0;
 			}
 
-			filteredAdvancements = FormatUtil.splitToPage(filteredAdvancements, currentPage, 20);
+			List<Pair<Advancement, AdvancementProgress>> splitFilteredAdvancements = FormatUtil.splitToPage(filteredAdvancements, currentPage, 20);
 
-			ctx.getSource().sendSuccess(Component.translatable("Sending all %1$ss of player %2$s (%3$s): %4$s", advancementReference, profile.getName(), totalEntries, ComponentUtils.formatList(filteredAdvancements, p -> advancementFormatter.apply(p.getLeft()).append(Component.translatable(" (%s%%)", p.getRight().getPercent() * 100).withStyle(ChatFormatting.GRAY)))), false);
+			ctx.getSource().sendSuccess(() -> Component.translatable("Sending all %1$ss of player %2$s (%3$s): %4$s", advancementReference, profile.getName(), totalEntries, ComponentUtils.formatList(splitFilteredAdvancements, p -> advancementFormatter.apply(p.getLeft()).append(Component.translatable(" (%s%%)", p.getRight().getPercent() * 100).withStyle(ChatFormatting.GRAY)))), false);
 
-			if (filteredAdvancements.size() > 0 && totalPages > 1)
-				ctx.getSource().sendSuccess(Component.translatable("Displaying page %1$s out of %2$s with %3$s entries", currentPage + 1, totalPages, filteredAdvancements.size()), false);
+			if (splitFilteredAdvancements.size() > 0 && totalPages > 1)
+				ctx.getSource().sendSuccess(() -> Component.translatable("Displaying page %1$s out of %2$s with %3$s entries", currentPage + 1, totalPages, splitFilteredAdvancements.size()), false);
 
 			return totalEntries;
 		}
@@ -99,7 +99,7 @@ public class AdvancementsCommand {
 
 		int completedCriteria = (int)sortedCriteria.stream().filter(p -> p.getValue().isDone()).count();
 
-		ctx.getSource().sendSuccess(Component.translatable("Sending %1$s %2$s of player %3$s: %4$s complete, %5$s out of %6$s criteria completed: %7$s", advancementReference, advancementFormatter.apply(advancement), profile.getName(), Component.translatable("%s%%", progress).withStyle(ChatFormatting.GRAY), completedCriteria, sortedCriteria.size(), ComponentUtils.formatList(sortedCriteria, p -> Component.literal(p.getLeft()).withStyle(s -> s.applyFormat(p.getRight().isDone() ? ChatFormatting.GREEN : ChatFormatting.DARK_RED).withHoverEvent(new HoverEvent(Action.SHOW_TEXT, Component.literal("Obtained: " + (p.getRight().isDone() ? p.getRight().getObtained() : "Never"))))))), false);
+		ctx.getSource().sendSuccess(() -> Component.translatable("Sending %1$s %2$s of player %3$s: %4$s complete, %5$s out of %6$s criteria completed: %7$s", advancementReference, advancementFormatter.apply(advancement), profile.getName(), Component.translatable("%s%%", progress).withStyle(ChatFormatting.GRAY), completedCriteria, sortedCriteria.size(), ComponentUtils.formatList(sortedCriteria, p -> Component.literal(p.getLeft()).withStyle(s -> s.applyFormat(p.getRight().isDone() ? ChatFormatting.GREEN : ChatFormatting.DARK_RED).withHoverEvent(new HoverEvent(Action.SHOW_TEXT, Component.literal("Obtained: " + (p.getRight().isDone() ? p.getRight().getObtained() : "Never"))))))), false);
 		return (int)progress;
 	}
 
@@ -119,8 +119,11 @@ public class AdvancementsCommand {
 			}
 		}
 
-		ctx.getSource().sendSuccess(Component.translatable("Player %1$s has %2$s completed advancements, %3$s of which are recipe advancements", profile.getName(), totalAdvancements, recipeAdvancements), false);
-		return totalAdvancements;
+		int finalRecipeAdvancements = recipeAdvancements;
+		int finalTotalAdvancements = totalAdvancements;
+
+		ctx.getSource().sendSuccess(() -> Component.translatable("Player %1$s has %2$s completed advancements, %3$s of which are recipe advancements", profile.getName(), finalTotalAdvancements, finalRecipeAdvancements), false);
+		return finalTotalAdvancements;
 	}
 
 	private static GameProfile ensureOneTarget(Collection<GameProfile> profiles) throws CommandSyntaxException {

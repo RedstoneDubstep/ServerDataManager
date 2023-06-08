@@ -97,10 +97,10 @@ public class PlayerDataCommand {
 			TagFormatUtil.removeNestedCollectionTags(compoundTag);
 
 		TagFormatUtil.splitTagToPage(foundTag, currentPage, 50);
-		ctx.getSource().sendSuccess(Component.translatable("Sending playerdata of player with UUID \"%1$s\" at path \"%2$s\" (%3$s total entries): %4$s", Component.literal(fileName).withStyle(ChatFormatting.AQUA), Component.literal(path != null ? path.toString() : "").withStyle(ChatFormatting.AQUA), totalTagEntries, NbtUtils.toPrettyComponent(foundTag)), false);
+		ctx.getSource().sendSuccess(() -> Component.translatable("Sending playerdata of player with UUID \"%1$s\" at path \"%2$s\" (%3$s total entries): %4$s", Component.literal(fileName).withStyle(ChatFormatting.AQUA), Component.literal(path != null ? path.toString() : "").withStyle(ChatFormatting.AQUA), totalTagEntries, NbtUtils.toPrettyComponent(foundTag)), false);
 
 		if (totalPages > 1)
-			ctx.getSource().sendSuccess(Component.translatable("Displaying page %1$s out of %2$s with %3$s entries", currentPage + 1, totalPages, TagFormatUtil.getTagSize(foundTag)), false);
+			ctx.getSource().sendSuccess(() -> Component.translatable("Displaying page %1$s out of %2$s with %3$s entries", currentPage + 1, totalPages, TagFormatUtil.getTagSize(foundTag)), false);
 
 		return totalTagEntries;
 	}
@@ -112,7 +112,7 @@ public class PlayerDataCommand {
 		if (count == 0)
 			ctx.getSource().sendFailure(Component.literal("No playerdata files found"));
 		else
-			ctx.getSource().sendSuccess(Component.translatable("Found %s playerdata files", count), false);
+			ctx.getSource().sendSuccess(() -> Component.translatable("Found %s playerdata files", count), false);
 
 		return count;
 	}

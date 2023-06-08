@@ -93,7 +93,7 @@ public class StatisticsCommand {
 		if (statMap.size() == 1 && stat != null) {
 			Component statComponent = Component.translatable(StatUtil.getStatTranslationKey(stat.getKey())).withStyle(ChatFormatting.GRAY).withStyle(s -> s.withHoverEvent(new HoverEvent(Action.SHOW_TEXT, Component.literal(stat.getKey().getName())))).append(": ").append(Component.literal(stat.getKey().format(stat.getValue())).withStyle(ChatFormatting.AQUA));
 
-			ctx.getSource().sendSuccess(Component.translatable("Sending statistic %1$s of %2$s of type \"%3$s\": %4$s", StatUtil.getStatTranslationKey(stat.getKey()), playerReference, statTypeComponent, statComponent), false);
+			ctx.getSource().sendSuccess(() -> Component.translatable("Sending statistic %1$s of %2$s of type \"%3$s\": %4$s", StatUtil.getStatTranslationKey(stat.getKey()), playerReference, statTypeComponent, statComponent), false);
 			return stat.getValue();
 		}
 
@@ -104,10 +104,10 @@ public class StatisticsCommand {
 
 		Component statList = ComponentUtils.formatList(statsOnPage, p -> Component.translatable(StatUtil.getStatTranslationKey(p.getKey())).withStyle(ChatFormatting.GRAY).withStyle(s -> s.withHoverEvent(new HoverEvent(Action.SHOW_TEXT, Component.literal(p.getKey().getName())))).append(": ").append(Component.literal(p.getKey().format(p.getValue())).withStyle(ChatFormatting.AQUA)));
 
-		ctx.getSource().sendSuccess(Component.translatable("Sending statistics of %1$s of type \"%2$s\" with %3$s entries: %4$s", playerReference, statTypeComponent, statsCollection.stats.size(), statList), false);
+		ctx.getSource().sendSuccess(() -> Component.translatable("Sending statistics of %1$s of type \"%2$s\" with %3$s entries: %4$s", playerReference, statTypeComponent, statsCollection.stats.size(), statList), false);
 
 		if (statsOnPage.size() > 0 && totalPages > 1)
-			ctx.getSource().sendSuccess(Component.translatable("Displaying page %1$s out of %2$s with %3$s entries", currentPage + 1, totalPages, statsOnPage.size()), false);
+			ctx.getSource().sendSuccess(() -> Component.translatable("Displaying page %1$s out of %2$s with %3$s entries", currentPage + 1, totalPages, statsOnPage.size()), false);
 
 		return statsCollection.stats.size();
 	}
@@ -148,7 +148,10 @@ public class StatisticsCommand {
 			}
 		}
 
-		if (best == null) {
+		Stat<?> finalStat = stat;
+		Pair<String, Integer> finalBest = best;
+
+		if (finalBest == null) {
 			if (statId == null)
 				ctx.getSource().sendFailure(Component.translatable("No statistics of %1$s of type \"%2$s\" were found", playerReference, statTypeComponent));
 			else
@@ -157,12 +160,12 @@ public class StatisticsCommand {
 			return 0;
 		}
 
-		String statName = stat == null ? "" : stat.getName();
+		String statName = finalStat == null ? "" : finalStat.getName();
 
 		if (statId == null)
-			ctx.getSource().sendSuccess(Component.translatable("Player with the " + (max ? "highest" : "lowest") + " number of statistic entries (%1$s) of type \"%2$s\" out of %3$s is %4$s", best.getRight(), statTypeComponent, playerReference, best.getLeft()), false);
+			ctx.getSource().sendSuccess(() -> Component.translatable("Player with the " + (max ? "highest" : "lowest") + " number of statistic entries (%1$s) of type \"%2$s\" out of %3$s is %4$s", finalBest.getRight(), statTypeComponent, playerReference, finalBest.getLeft()), false);
 		else if (stat != null)
-			ctx.getSource().sendSuccess(Component.translatable("Player with the " + (max ? "highest" : "lowest") + " value (%1$s) of statistic \"%2$s\" of type \"%3$s\" out of %4$s is %5$s", stat.format(best.getRight()), Component.translatable(StatUtil.getStatTranslationKey(stat)).withStyle(ChatFormatting.GRAY).withStyle(s -> s.withHoverEvent(new HoverEvent(Action.SHOW_TEXT, Component.literal(statName)))), statTypeComponent, playerReference, best.getLeft()), false);
+			ctx.getSource().sendSuccess(() -> Component.translatable("Player with the " + (max ? "highest" : "lowest") + " value (%1$s) of statistic \"%2$s\" of type \"%3$s\" out of %4$s is %5$s", finalStat.format(finalBest.getRight()), Component.translatable(StatUtil.getStatTranslationKey(finalStat)).withStyle(ChatFormatting.GRAY).withStyle(s -> s.withHoverEvent(new HoverEvent(Action.SHOW_TEXT, Component.literal(statName)))), statTypeComponent, playerReference, finalBest.getLeft()), false);
 
 		return best.getRight();
 	}

@@ -74,10 +74,10 @@ public class StructuresCommand {
 			TagFormatUtil.removeNestedCollectionTags(compoundTag);
 
 		TagFormatUtil.splitTagToPage(foundTag, currentPage, 50);
-		ctx.getSource().sendSuccess(Component.translatable("Sending data of structure with name %1$s at path \"%2$s\" (%3$s total entries): %4$s", Component.literal(name.toString()).withStyle(ChatFormatting.AQUA), Component.literal(path != null ? path.toString() : "").withStyle(ChatFormatting.AQUA), totalTagEntries, NbtUtils.toPrettyComponent(foundTag)), false);
+		ctx.getSource().sendSuccess(() -> Component.translatable("Sending data of structure with name %1$s at path \"%2$s\" (%3$s total entries): %4$s", Component.literal(name.toString()).withStyle(ChatFormatting.AQUA), Component.literal(path != null ? path.toString() : "").withStyle(ChatFormatting.AQUA), totalTagEntries, NbtUtils.toPrettyComponent(foundTag)), false);
 
 		if (totalPages > 1)
-			ctx.getSource().sendSuccess(Component.translatable("Displaying page %1$s out of %2$s with %3$s entries", currentPage + 1, totalPages, TagFormatUtil.getTagSize(foundTag)), false);
+			ctx.getSource().sendSuccess(() -> Component.translatable("Displaying page %1$s out of %2$s with %3$s entries", currentPage + 1, totalPages, TagFormatUtil.getTagSize(foundTag)), false);
 
 		return totalTagEntries;
 	}
@@ -90,7 +90,7 @@ public class StructuresCommand {
 		if (count == 0)
 			ctx.getSource().sendFailure(Component.literal("No structures found"));
 		else
-			ctx.getSource().sendSuccess(Component.translatable("Found %1$s structures with %2$s different namespaces", count, namespaces), false);
+			ctx.getSource().sendSuccess(() -> Component.translatable("Found %1$s structures with %2$s different namespaces", count, namespaces), false);
 
 		return count;
 	}

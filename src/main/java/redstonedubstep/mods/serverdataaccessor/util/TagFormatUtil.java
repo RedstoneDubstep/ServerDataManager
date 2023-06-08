@@ -72,14 +72,14 @@ public class TagFormatUtil {
 	}
 
 	public static void clearCollectionTag(Tag tag) {
-		if (tag instanceof CollectionTag collectionTag)
+		if (tag instanceof CollectionTag<?> collectionTag)
 			collectionTag.clear();
 		else if (tag instanceof CompoundTag compoundTag)
 			new HashSet<>(compoundTag.getAllKeys()).forEach(compoundTag::remove);
 	}
 
 	public static int getTagSize(Tag tag) {
-		if (tag instanceof CollectionTag collectionTag)
+		if (tag instanceof CollectionTag<?> collectionTag)
 			return collectionTag.size();
 		else if (tag instanceof CompoundTag compoundTag)
 			return compoundTag.size();

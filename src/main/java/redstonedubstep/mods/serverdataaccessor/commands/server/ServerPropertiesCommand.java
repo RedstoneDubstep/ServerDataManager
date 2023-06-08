@@ -36,7 +36,7 @@ public class ServerPropertiesCommand {
 			List<Pair<String, String>> sortedProperties = serverProperties.entrySet().stream().map(e -> Pair.of(e.getKey().toString(), e.getValue().toString())).sorted(Comparator.comparing(Pair::getLeft)).toList();
 			Component propertiesComponent = ComponentUtils.formatList(sortedProperties, p -> Component.literal(p.getKey()).withStyle(ChatFormatting.AQUA).append("=").append(Component.literal(p.getValue()).withStyle(ChatFormatting.GREEN)));
 
-			ctx.getSource().sendSuccess(Component.translatable("The following %s properties were found: \n", serverProperties.entrySet().size()).append(propertiesComponent), false);
+			ctx.getSource().sendSuccess(() -> Component.translatable("The following %s properties were found: \n", serverProperties.entrySet().size()).append(propertiesComponent), false);
 			return sortedProperties.size();
 		}
 		else if (!serverProperties.containsKey(name)) {
@@ -44,7 +44,7 @@ public class ServerPropertiesCommand {
 			return 0;
 		}
 
-		ctx.getSource().sendSuccess(Component.translatable("Property \"%1$s\" has the following value: %2$s", Component.literal(name).withStyle(ChatFormatting.AQUA), Component.literal(serverProperties.get(name).toString()).withStyle(ChatFormatting.GREEN)), false);
+		ctx.getSource().sendSuccess(() -> Component.translatable("Property \"%1$s\" has the following value: %2$s", Component.literal(name).withStyle(ChatFormatting.AQUA), Component.literal(serverProperties.get(name).toString()).withStyle(ChatFormatting.GREEN)), false);
 		return 1;
 	}
 }

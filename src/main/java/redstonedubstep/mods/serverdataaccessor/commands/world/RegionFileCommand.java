@@ -37,7 +37,10 @@ public class RegionFileCommand {
 			}
 		}
 
-		ctx.getSource().sendSuccess(Component.translatable("Found %1$s region files of type \"%2$s\", of which %3$s are empty, with a total size of %4$s kilobytes", regionFiles.length, path, regionFiles.length - notEmptyFiles, totalSize / 1024), false);
+		int finalNotEmptyFiles = notEmptyFiles;
+		long finalTotalSize = totalSize;
+
+		ctx.getSource().sendSuccess(() -> Component.translatable("Found %1$s region files of type \"%2$s\", of which %3$s are empty, with a total size of %4$s kilobytes", regionFiles.length, path, regionFiles.length - finalNotEmptyFiles, finalTotalSize / 1024), false);
 		return regionFiles.length;
 	}
 }

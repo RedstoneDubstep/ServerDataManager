@@ -63,10 +63,10 @@ public class DimensionDataCommand {
 			TagFormatUtil.removeNestedCollectionTags(compoundTag);
 
 		TagFormatUtil.splitTagToPage(foundTag, currentPage, 50);
-		ctx.getSource().sendSuccess(Component.translatable("Sending data with name \"%1$s\" at path \"%2$s\" of dimension \"%3$s\" (%4$s total entries): %5$s", Component.literal(filename).withStyle(ChatFormatting.GRAY), Component.literal(path != null ? path.toString() : "").withStyle(ChatFormatting.AQUA), levelName, totalTagEntries, NbtUtils.toPrettyComponent(foundTag)), false);
+		ctx.getSource().sendSuccess(() -> Component.translatable("Sending data with name \"%1$s\" at path \"%2$s\" of dimension \"%3$s\" (%4$s total entries): %5$s", Component.literal(filename).withStyle(ChatFormatting.GRAY), Component.literal(path != null ? path.toString() : "").withStyle(ChatFormatting.AQUA), levelName, totalTagEntries, NbtUtils.toPrettyComponent(foundTag)), false);
 
 		if (totalPages > 1)
-			ctx.getSource().sendSuccess(Component.translatable("Displaying page %1$s out of %2$s with %3$s entries", currentPage + 1, totalPages, TagFormatUtil.getTagSize(foundTag)), false);
+			ctx.getSource().sendSuccess(() -> Component.translatable("Displaying page %1$s out of %2$s with %3$s entries", currentPage + 1, totalPages, TagFormatUtil.getTagSize(foundTag)), false);
 
 		return totalTagEntries;
 	}

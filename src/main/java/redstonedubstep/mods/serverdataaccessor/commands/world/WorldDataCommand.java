@@ -52,10 +52,10 @@ public class WorldDataCommand {
 			TagFormatUtil.removeNestedCollectionTags(compoundTag);
 
 		TagFormatUtil.splitTagToPage(foundTag, currentPage, 50);
-		ctx.getSource().sendSuccess(Component.translatable("Sending vanilla world data at path \"%1$s\" (%2$s total entries): %3$s", Component.literal(path != null ? path.toString() : "").withStyle(ChatFormatting.AQUA), totalTagEntries, NbtUtils.toPrettyComponent(foundTag)), false);
+		ctx.getSource().sendSuccess(() -> Component.translatable("Sending vanilla world data at path \"%1$s\" (%2$s total entries): %3$s", Component.literal(path != null ? path.toString() : "").withStyle(ChatFormatting.AQUA), totalTagEntries, NbtUtils.toPrettyComponent(foundTag)), false);
 
 		if (totalPages > 1)
-			ctx.getSource().sendSuccess(Component.translatable("Displaying page %1$s out of %2$s with %3$s entries", currentPage + 1, totalPages, TagFormatUtil.getTagSize(foundTag)), false);
+			ctx.getSource().sendSuccess(() -> Component.translatable("Displaying page %1$s out of %2$s with %3$s entries", currentPage + 1, totalPages, TagFormatUtil.getTagSize(foundTag)), false);
 
 		return totalTagEntries;
 	}
@@ -100,11 +100,13 @@ public class WorldDataCommand {
 		else if (foundTag instanceof ListTag listTag && path.endsWith(".ids")) //When the id tag gets referenced directly, only show the resource keys as string tags to truncate all the {} and resource ids, since these are not worth showing
 			foundTag = TagFormatUtil.formatResourceEntriesToKeys(listTag);
 
-		TagFormatUtil.splitTagToPage(foundTag, currentPage, 50);
-		ctx.getSource().sendSuccess(Component.translatable("Sending FML world data at path \"%1$s\" (%2$s total entries): %3$s", Component.literal(path).withStyle(ChatFormatting.AQUA), totalTagEntries, NbtUtils.toPrettyComponent(foundTag)), false);
+		Tag finalFoundTag = foundTag;
+
+		TagFormatUtil.splitTagToPage(finalFoundTag, currentPage, 50);
+		ctx.getSource().sendSuccess(() -> Component.translatable("Sending FML world data at path \"%1$s\" (%2$s total entries): %3$s", Component.literal(path).withStyle(ChatFormatting.AQUA), totalTagEntries, NbtUtils.toPrettyComponent(finalFoundTag)), false);
 
 		if (totalPages > 1)
-			ctx.getSource().sendSuccess(Component.translatable("Displaying page %1$s out of %2$s with %3$s entries", currentPage + 1, totalPages, TagFormatUtil.getTagSize(foundTag)), false);
+			ctx.getSource().sendSuccess(() -> Component.translatable("Displaying page %1$s out of %2$s with %3$s entries", currentPage + 1, totalPages, TagFormatUtil.getTagSize(finalFoundTag)), false);
 
 		return totalTagEntries;
 	}
