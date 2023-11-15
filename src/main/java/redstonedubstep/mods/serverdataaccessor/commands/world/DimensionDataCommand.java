@@ -42,7 +42,7 @@ public class DimensionDataCommand {
 		CompoundTag data;
 
 		try {
-			 data = dataStorage.readTagFromDisk(filename, SharedConstants.getCurrentVersion().getDataVersion().getVersion()).getCompound("data");
+			 data = dataStorage.readTagFromDisk(filename, null, SharedConstants.getCurrentVersion().getDataVersion().getVersion()).getCompound("data");
 		} catch(Exception exception) {
 			ctx.getSource().sendFailure(Component.translatable("Couldn't read data \"%1$s\" of dimension \"%2$s\"", filename, levelName));
 			return 0;

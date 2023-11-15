@@ -2,15 +2,15 @@ package redstonedubstep.mods.serverdataaccessor;
 
 import org.apache.commons.lang3.tuple.Pair;
 
-import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.common.ForgeConfigSpec.IntValue;
+import net.neoforged.neoforge.common.ModConfigSpec;
+import net.neoforged.neoforge.common.ModConfigSpec.IntValue;
 
 public class SDMConfig {
-	public static final ForgeConfigSpec SERVER_SPEC;
+	public static final ModConfigSpec SERVER_SPEC;
 	public static final Config CONFIG;
 
 	static {
-		final Pair<Config, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder().configure(Config::new);
+		final Pair<Config, ModConfigSpec> specPair = new ModConfigSpec.Builder().configure(Config::new);
 
 		SERVER_SPEC = specPair.getRight();
 		CONFIG = specPair.getLeft();
@@ -20,7 +20,7 @@ public class SDMConfig {
 		public IntValue serverdataCommandPermissionLevel;
 		public IntValue worlddataCommandPermissionLevel;
 
-		Config(ForgeConfigSpec.Builder builder) {
+		Config(ModConfigSpec.Builder builder) {
 			serverdataCommandPermissionLevel = builder
 					.comment("What op permission level should be the requirement for being able to execute /serverdata?")
 					.defineInRange("serverdataCommandPermissionLevel", 2, 0, 4);

@@ -16,7 +16,7 @@ import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.storage.WorldData;
-import net.minecraftforge.common.ForgeHooks;
+import net.neoforged.neoforge.common.CommonHooks;
 import redstonedubstep.mods.serverdataaccessor.util.TagFormatUtil;
 
 public class WorldDataCommand {
@@ -65,7 +65,7 @@ public class WorldDataCommand {
 		CompoundTag fmlWorldData = new CompoundTag();
 		String[] nodes = path.split("\\.");
 
-		ForgeHooks.writeAdditionalLevelSaveData(data, fmlWorldData);
+		CommonHooks.writeAdditionalLevelSaveData(data, fmlWorldData);
 
 		Tag foundTag = fmlWorldData.getCompound("fml");
 		boolean success = false;

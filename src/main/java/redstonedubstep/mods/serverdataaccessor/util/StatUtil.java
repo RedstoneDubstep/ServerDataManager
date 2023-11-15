@@ -17,6 +17,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap.Entry;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
@@ -103,7 +104,8 @@ public class StatUtil {
 	}
 
 	public static String getStatTypeTranslation(StatType<?> statType) {
-		String key = statType.getTranslationKey();
+		Component displayName = statType.getDisplayName();
+		String key = displayName.getContents() instanceof TranslatableContents content ? content.getKey() : displayName.getString();
 
 		if (key.contains("killed") || key.contains("custom")) {
 			String name = key.substring(key.lastIndexOf(".") + 1).replace(".", "").replace("_", " ");
