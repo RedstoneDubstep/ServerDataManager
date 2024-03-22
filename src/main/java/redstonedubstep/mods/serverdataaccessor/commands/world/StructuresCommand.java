@@ -21,6 +21,7 @@ import net.minecraft.commands.arguments.NbtPathArgument;
 import net.minecraft.commands.arguments.NbtPathArgument.NbtPath;
 import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtAccounter;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
@@ -46,16 +47,16 @@ public class StructuresCommand {
 		File structureFile = generatedFolderPath.resolve(Path.of(name.getNamespace(), "structures", name.getPath() + ".nbt")).toFile();
 
 		if (!structureFile.isFile()) {
-			ctx.getSource().sendFailure(Component.translatable("No structure with name %s could be found", name));
+			ctx.getSource().sendFailure(Component.translatable("No structure with name %s could be found", name.toString()));
 			return 0;
 		}
 
 		CompoundTag structureData;
 
 		try {
-			structureData = NbtIo.readCompressed(structureFile);
+			structureData = NbtIo.readCompressed(structureFile.toPath(), NbtAccounter.unlimitedHeap());
 		} catch(IOException e) {
-			ctx.getSource().sendFailure(Component.translatable("Failed to read structure with name %s", name));
+			ctx.getSource().sendFailure(Component.translatable("Failed to read structure with name %s", name.toString()));
 			return 0;
 		}
 
@@ -66,7 +67,7 @@ public class StructuresCommand {
 		int currentPage = page > totalPages ? totalPages - 1 : page - 1;
 
 		if (totalTagEntries == 0) {
-			ctx.getSource().sendFailure(Component.translatable("Data of structure with name %s does not contain any tags at given path", name));
+			ctx.getSource().sendFailure(Component.translatable("Data of structure with name %s does not contain any tags at given path", name.toString()));
 			return 0;
 		}
 

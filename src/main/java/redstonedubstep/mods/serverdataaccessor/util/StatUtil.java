@@ -80,7 +80,7 @@ public class StatUtil {
 			if (optionalStat.isPresent())
 				stat = Pair.of(optionalStat.get().getKey(), optionalStat.get().getIntValue());
 			else
-				throw new SimpleCommandExceptionType(Component.translatable("Couldn't find statistic with id \"%1$s\" of type \"%2$s\"", statId, Component.translatable(StatUtil.getStatTypeTranslation(statType)))).create();
+				throw new SimpleCommandExceptionType(Component.translatable("Couldn't find statistic with id \"%1$s\" of type \"%2$s\"", statId.toString(), Component.translatable(StatUtil.getStatTypeTranslation(statType)))).create();
 		}
 
 		return stat;

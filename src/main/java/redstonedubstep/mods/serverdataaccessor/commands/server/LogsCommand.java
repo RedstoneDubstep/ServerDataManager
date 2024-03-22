@@ -75,10 +75,10 @@ public class LogsCommand {
 
 		if (!sendInChat) {
 			int listContentSize = logLines.stream().mapToInt(s -> s.getBytes(StandardCharsets.UTF_8).length).sum();
-			int totalPages = (int)Math.ceil(listContentSize / 260000.0D);
+			int totalPages = (int)Math.ceil(listContentSize / 60000.0D);
 			int currentPage = page > totalPages ? totalPages - 1 : page - 1;
 			HoverEvent infoText = new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Click to copy log content"));
-			List<String> splitLogLines = FormatUtil.splitStringsToPage(logLines, currentPage, 260000);
+			List<String> splitLogLines = FormatUtil.splitStringsToPage(logLines, currentPage, 60000);
 
 			ClickEvent copyToClipboard = new ClickEvent(Action.COPY_TO_CLIPBOARD, ComponentUtils.formatList(splitLogLines, Component.literal("\n"), Component::literal).getString());
 

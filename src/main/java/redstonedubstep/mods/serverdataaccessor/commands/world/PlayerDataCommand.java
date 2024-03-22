@@ -20,6 +20,7 @@ import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.NbtPathArgument;
 import net.minecraft.commands.arguments.NbtPathArgument.NbtPath;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtAccounter;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
@@ -76,7 +77,7 @@ public class PlayerDataCommand {
 		CompoundTag playerData;
 
 		try {
-			playerData = NbtIo.readCompressed(playerDataFile);
+			playerData = NbtIo.readCompressed(playerDataFile.toPath(), NbtAccounter.unlimitedHeap());
 		} catch(IOException e) {
 			ctx.getSource().sendFailure(Component.translatable("Failed to read playerdata of player with UUID \"%s\"", fileName));
 			return 0;

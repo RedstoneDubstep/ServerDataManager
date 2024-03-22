@@ -7,7 +7,6 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
-import net.neoforged.neoforge.network.NetworkConstants;
 import redstonedubstep.mods.serverdataaccessor.commands.CommandRoot;
 
 @Mod(ServerDataAccessor.MODID)
@@ -15,7 +14,7 @@ public class ServerDataAccessor {
 	public static final String MODID = "serverdataaccessor";
 
 	public ServerDataAccessor() {
-		ModLoadingContext.get().registerExtensionPoint(IExtensionPoint.DisplayTest.class, () -> new IExtensionPoint.DisplayTest(() -> NetworkConstants.IGNORESERVERONLY, (a, b) -> true));
+		ModLoadingContext.get().registerExtensionPoint(IExtensionPoint.DisplayTest.class, () -> new IExtensionPoint.DisplayTest(() -> IExtensionPoint.DisplayTest.IGNORESERVERONLY, (a, b) -> true));
 		NeoForge.EVENT_BUS.addListener(this::registerCommands);
 		ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, SDMConfig.SERVER_SPEC);
 	}

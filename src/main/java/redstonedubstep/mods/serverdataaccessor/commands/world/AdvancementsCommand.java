@@ -40,8 +40,8 @@ import net.neoforged.neoforge.common.util.FakePlayer;
 import redstonedubstep.mods.serverdataaccessor.util.FormatUtil;
 
 public class AdvancementsCommand {
-	private static final SuggestionProvider<CommandSourceStack> SUGGEST_ADVANCEMENTS = (ctx, suggestionsBuilder) -> SharedSuggestionProvider.suggestResource(getPlayerAdvancements(ctx, GameProfileArgument.getGameProfiles(ctx, "player")).progress.entrySet().stream().filter(adv -> adv.getValue().hasProgress() && adv.getKey().value().rewards().getRecipes().length == 0).map(adv -> adv.getKey().id()), suggestionsBuilder);
-	private static final SuggestionProvider<CommandSourceStack> SUGGEST_RECIPES = (ctx, suggestionsBuilder) -> SharedSuggestionProvider.suggestResource(getPlayerAdvancements(ctx, GameProfileArgument.getGameProfiles(ctx, "player")).progress.entrySet().stream().filter(adv -> adv.getValue().hasProgress() && adv.getKey().value().rewards().getRecipes().length > 0).map(adv -> adv.getKey().id()), suggestionsBuilder);
+	private static final SuggestionProvider<CommandSourceStack> SUGGEST_ADVANCEMENTS = (ctx, suggestionsBuilder) -> SharedSuggestionProvider.suggestResource(getPlayerAdvancements(ctx, GameProfileArgument.getGameProfiles(ctx, "player")).progress.entrySet().stream().filter(adv -> adv.getValue().hasProgress() && adv.getKey().value().rewards().recipes().isEmpty()).map(adv -> adv.getKey().id()), suggestionsBuilder);
+	private static final SuggestionProvider<CommandSourceStack> SUGGEST_RECIPES = (ctx, suggestionsBuilder) -> SharedSuggestionProvider.suggestResource(getPlayerAdvancements(ctx, GameProfileArgument.getGameProfiles(ctx, "player")).progress.entrySet().stream().filter(adv -> adv.getValue().hasProgress() && !adv.getKey().value().rewards().recipes().isEmpty()).map(adv -> adv.getKey().id()), suggestionsBuilder);
 
 	public static ArgumentBuilder<CommandSourceStack, ?> register() {
 		return Commands.literal("advancements")
@@ -64,7 +64,7 @@ public class AdvancementsCommand {
 
 		if (advancement == null) {
 			Stream<Pair<AdvancementHolder, AdvancementProgress>> allAdvancements = playerAdvancements.progress.entrySet().stream().map(Pair::of).filter(p -> p.getRight().hasProgress()).sorted(Comparator.comparing(p -> p.getRight().getFirstProgressDate() == null ? Instant.now() : p.getRight().getFirstProgressDate()));
-			List<Pair<AdvancementHolder, AdvancementProgress>> filteredAdvancements = allAdvancements.filter(p -> recipe ? p.getKey().value().rewards().getRecipes().length > 0 : p.getKey().value().rewards().getRecipes().length == 0).toList();
+			List<Pair<AdvancementHolder, AdvancementProgress>> filteredAdvancements = allAdvancements.filter(p -> recipe != p.getKey().value().rewards().recipes().isEmpty()).toList();
 			int totalEntries = filteredAdvancements.size();
 			int totalPages = (int)Math.ceil(totalEntries / 20D);
 			int currentPage = page > totalPages ? totalPages - 1 : page - 1;
@@ -113,7 +113,7 @@ public class AdvancementsCommand {
 
 		for (Entry<AdvancementHolder, AdvancementProgress> advancement : playerAdvancements.progress.entrySet()) {
 			if (advancement.getValue().getPercent() > 0.0F) {
-				if (advancement.getKey().value().rewards().getRecipes().length > 0)
+				if (!advancement.getKey().value().rewards().recipes().isEmpty())
 					recipeAdvancements++;
 
 				totalAdvancements++;

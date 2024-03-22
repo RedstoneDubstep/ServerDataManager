@@ -38,7 +38,7 @@ public class DimensionDataCommand {
 
 	private static int getLevelData(CommandContext<CommandSourceStack> ctx, ServerLevel level, String filename, int page, NbtPath path) throws CommandSyntaxException {
 		DimensionDataStorage dataStorage = level.getDataStorage();
-		ResourceLocation levelName = ctx.getArgument("dimension", ResourceLocation.class);
+		String levelName = ctx.getArgument("dimension", ResourceLocation.class).toString();
 		CompoundTag data;
 
 		try {

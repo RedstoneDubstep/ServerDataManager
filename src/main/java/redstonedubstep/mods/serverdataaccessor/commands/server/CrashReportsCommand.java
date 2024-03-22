@@ -72,10 +72,10 @@ public class CrashReportsCommand {
 
 			if (!sendInChat) {
 				int listContentSize = crashReportLines.stream().mapToInt(s -> s.getBytes(StandardCharsets.UTF_8).length).sum();
-				int totalPages = (int)Math.ceil(listContentSize / 260000.0D);
+				int totalPages = (int)Math.ceil(listContentSize / 60000.0D);
 				int currentPage = page > totalPages ? totalPages - 1 : page - 1;
 				HoverEvent infoText = new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Click to copy crash report content"));
-				List<String> splitCrashReportLines = FormatUtil.splitStringsToPage(crashReportLines, currentPage, 260000);
+				List<String> splitCrashReportLines = FormatUtil.splitStringsToPage(crashReportLines, currentPage, 60000);
 				ClickEvent copyToClipboard = new ClickEvent(Action.COPY_TO_CLIPBOARD, ComponentUtils.formatList(splitCrashReportLines, Component.literal("\n"), Component::literal).getString());
 
 				ctx.getSource().sendSuccess(() -> Component.translatable("Sending crash report \"%1$s\" (%2$s total lines): %3$s", crashReportName, totalLines, Component.literal("Crash report content").withStyle(s -> s.applyFormat(ChatFormatting.UNDERLINE).withClickEvent(copyToClipboard).withHoverEvent(infoText))), false);
