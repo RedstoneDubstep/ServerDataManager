@@ -108,7 +108,7 @@ public class StructuresCommand {
 				if (structuresFolder.exists() && structuresFolder.listFiles() != null) {
 					for (File pathFile : structuresFolder.listFiles()) {
 						if (pathFile.getName().endsWith(".nbt"))
-							structures.add(new ResourceLocation(namespaceFolder.getName(), pathFile.getName().replace(".nbt", "")));
+							structures.add(ResourceLocation.fromNamespaceAndPath(namespaceFolder.getName(), pathFile.getName().replace(".nbt", "")));
 					}
 				}
 			}
