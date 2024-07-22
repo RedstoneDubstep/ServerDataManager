@@ -1,4 +1,4 @@
-# This is an example mods.toml file. It contains the data relating to the loading mods.
+# This is an example neoforge.mods.toml file. It contains the data relating to the loading mods.
 # There are several mandatory fields (#mandatory), and many more that are optional (#optional).
 # The overall format is standard TOML format, v0.5.0.
 # Note that there are a couple of TOML lists in this file.
@@ -16,6 +16,8 @@ modId = "serverdataaccessor" #mandatory
 version = "1.0" #mandatory
 # A display name for the mod
 displayName = "ServerDataAccessor" #mandatory
+# To mark this mod as serverside-only
+displayTest = "IGNORE_SERVER_VERSION"
 # A file name (in the root of the mod JAR) containing a logo for display
 #logoFile="serverdataaccessor.png" #optional
 # A text field displayed in the mod UI

@@ -1,8 +1,7 @@
 package redstonedubstep.mods.serverdataaccessor;
 
 import net.minecraft.commands.Commands.CommandSelection;
-import net.neoforged.fml.IExtensionPoint;
-import net.neoforged.fml.ModLoadingContext;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.common.NeoForge;
@@ -13,10 +12,9 @@ import redstonedubstep.mods.serverdataaccessor.commands.CommandRoot;
 public class ServerDataAccessor {
 	public static final String MODID = "serverdataaccessor";
 
-	public ServerDataAccessor() {
-		ModLoadingContext.get().registerExtensionPoint(IExtensionPoint.DisplayTest.class, () -> new IExtensionPoint.DisplayTest(() -> IExtensionPoint.DisplayTest.IGNORESERVERONLY, (a, b) -> true));
+	public ServerDataAccessor(ModContainer container) {
 		NeoForge.EVENT_BUS.addListener(this::registerCommands);
-		ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, SDMConfig.SERVER_SPEC);
+		container.registerConfig(ModConfig.Type.SERVER, SDMConfig.SERVER_SPEC);
 	}
 
 	public void registerCommands(RegisterCommandsEvent event){
